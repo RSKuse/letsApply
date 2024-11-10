@@ -9,10 +9,12 @@ import UIKit
 import FirebaseAuth
 
 class SignInViewController: UIViewController {
+    
     lazy var emailTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Email"
         textField.borderStyle = .roundedRect
+        textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
     
@@ -21,6 +23,7 @@ class SignInViewController: UIViewController {
         textField.placeholder = "Password"
         textField.isSecureTextEntry = true
         textField.borderStyle = .roundedRect
+        textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
     
@@ -28,15 +31,18 @@ class SignInViewController: UIViewController {
         let button = UIButton(type: .system)
         button.setTitle("Sign In", for: .normal)
         button.addTarget(self, action: #selector(handleSignIn), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
         setupUI()
     }
     
-    private func setupUI() {
+    func setupUI() {
+        //view.backgroundColor = .white
         view.addSubview(emailTextField)
         view.addSubview(passwordTextField)
         view.addSubview(signInButton)
