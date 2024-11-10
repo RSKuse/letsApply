@@ -1,0 +1,12 @@
+version: "Apple Swift version 6.0.2 (swiftlang-6.0.2.1.2 clang-1600.0.26.4)"
+options: "bf318bd769ec65db1de0899c0ea54b8ae9641cb26320f642588d36c3318328c2"
+build_start_time: [1731228401, 655117000]
+build_end_time: [1731228405, 224317000]
+inputs:
+  ? "/Users/reubensimphiwekuse/Downloads/Money Move/IOS DEVELOPMENT/2024/letsApply/build/letsApply.build/Release-iphoneos/letsApply.build/DerivedSources/GeneratedAssetSymbols.swift"
+  : !dirty [1731228401, 303993315]
+  "/Users/reubensimphiwekuse/Downloads/Money Move/IOS DEVELOPMENT/2024/letsApply/letsApply/AppDelegate.swift": !dirty [1731186063, 327646528]
+  "/Users/reubensimphiwekuse/Downloads/Money Move/IOS DEVELOPMENT/2024/letsApply/letsApply/Controllers/SignInViewController.swift": !dirty [1731186276, 134536118]
+  "/Users/reubensimphiwekuse/Downloads/Money Move/IOS DEVELOPMENT/2024/letsApply/letsApply/Models/UserProfile.swift": !dirty [1731186063, 301090868]
+  "/Users/reubensimphiwekuse/Downloads/Money Move/IOS DEVELOPMENT/2024/letsApply/letsApply/SceneDelegate.swift": !dirty [1731172623, 476192604]
+  "/Users/reubensimphiwekuse/Downloads/Money Move/IOS DEVELOPMENT/2024/letsApply/letsApply/Services/FirestoreService.swift": !dirty [1731186063, 281338971]
