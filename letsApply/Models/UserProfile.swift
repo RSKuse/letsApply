@@ -9,7 +9,8 @@ import Foundation
 
 struct UserProfile {
     let uid: String
-    let name: String
-    let email: String
-    let skills: [String]
+    var name: String
+    var email: String
+    var skills: [String]
+    var location: String
 }
