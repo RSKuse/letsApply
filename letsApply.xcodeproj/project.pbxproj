@@ -6,12 +6,19 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B305FA2B3F51B56B1CC6603D /* Pods_letsApply.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 698C52FC24D4A36BBE0E3572 /* Pods_letsApply.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		0DAF6EBDB588EAB74BE173E1 /* Pods-letsApply.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-letsApply.debug.xcconfig"; path = "Target Support Files/Pods-letsApply/Pods-letsApply.debug.xcconfig"; sourceTree = "<group>"; };
+		698C52FC24D4A36BBE0E3572 /* Pods_letsApply.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_letsApply.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3C85AEE2CDFD08F0069F1CC /* letsApply.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = letsApply.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA2CFD037A5CEA1C765C19BC /* Pods-letsApply.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-letsApply.release.xcconfig"; path = "Target Support Files/Pods-letsApply/Pods-letsApply.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		F3C85B002CDFD0900069F1CC /* Exceptions for "letsApply" folder in "letsApply" target */ = {
+		F3C85B742CE0078C0069F1CC /* Exceptions for "letsApply" folder in "letsApply" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -21,10 +28,10 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		F3C85AF02CDFD08F0069F1CC /* letsApply */ = {
+		F3C85B5D2CDFF6E50069F1CC /* letsApply */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				F3C85B002CDFD0900069F1CC /* Exceptions for "letsApply" folder in "letsApply" target */,
+				F3C85B742CE0078C0069F1CC /* Exceptions for "letsApply" folder in "letsApply" target */,
 			);
 			path = letsApply;
 			sourceTree = "<group>";
@@ -36,17 +43,37 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B305FA2B3F51B56B1CC6603D /* Pods_letsApply.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3DF488434DDAF372FCE6D148 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				698C52FC24D4A36BBE0E3572 /* Pods_letsApply.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		48C0F919FD7A903C3E1D6A0E /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				0DAF6EBDB588EAB74BE173E1 /* Pods-letsApply.debug.xcconfig */,
+				FA2CFD037A5CEA1C765C19BC /* Pods-letsApply.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		F3C85AE52CDFD08F0069F1CC = {
 			isa = PBXGroup;
 			children = (
-				F3C85AF02CDFD08F0069F1CC /* letsApply */,
+				F3C85B5D2CDFF6E50069F1CC /* letsApply */,
 				F3C85AEF2CDFD08F0069F1CC /* Products */,
+				48C0F919FD7A903C3E1D6A0E /* Pods */,
+				3DF488434DDAF372FCE6D148 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -65,20 +92,20 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F3C85B012CDFD0900069F1CC /* Build configuration list for PBXNativeTarget "letsApply" */;
 			buildPhases = (
+				D66990C0519F9B05857A189C /* [CP] Check Pods Manifest.lock */,
 				F3C85AEA2CDFD08F0069F1CC /* Sources */,
 				F3C85AEB2CDFD08F0069F1CC /* Frameworks */,
 				F3C85AEC2CDFD08F0069F1CC /* Resources */,
+				7593CE949DE1BE9DCE891AF6 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				F3C85AF02CDFD08F0069F1CC /* letsApply */,
+				F3C85B5D2CDFF6E50069F1CC /* letsApply */,
 			);
 			name = letsApply;
-			packageProductDependencies = (
-			);
 			productName = letsApply;
 			productReference = F3C85AEE2CDFD08F0069F1CC /* letsApply.app */;
 			productType = "com.apple.product-type.application";
@@ -127,6 +154,48 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		7593CE949DE1BE9DCE891AF6 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-letsApply/Pods-letsApply-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-letsApply/Pods-letsApply-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-letsApply/Pods-letsApply-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D66990C0519F9B05857A189C /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-letsApply-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		F3C85AEA2CDFD08F0069F1CC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -140,6 +209,7 @@
 /* Begin XCBuildConfiguration section */
 		F3C85B022CDFD0900069F1CC /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0DAF6EBDB588EAB74BE173E1 /* Pods-letsApply.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -150,7 +220,6 @@
 				INFOPLIST_FILE = letsApply/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -168,6 +237,7 @@
 		};
 		F3C85B032CDFD0900069F1CC /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FA2CFD037A5CEA1C765C19BC /* Pods-letsApply.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -178,7 +248,6 @@
 				INFOPLIST_FILE = letsApply/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
