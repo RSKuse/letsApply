@@ -10,7 +10,7 @@ import UIKit
 import FirebaseAuth
 import FirebaseFirestore
 
-class SignUpViewController: UIViewController {
+class SignUpViewController: UIViewController, UITextFieldDelegate {
     
     let firestoreService = FirestoreService()
     private let viewModel = SignUpViewModel()
@@ -20,6 +20,8 @@ class SignUpViewController: UIViewController {
         let textField = UITextField()
         textField.placeholder = "Full Name"
         textField.borderStyle = .roundedRect
+        textField.delegate = self
+        textField.autocapitalizationType = .none
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
@@ -28,6 +30,8 @@ class SignUpViewController: UIViewController {
         let textField = UITextField()
         textField.placeholder = "Email"
         textField.borderStyle = .roundedRect
+        textField.delegate = self
+        textField.autocapitalizationType = .none
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
@@ -37,6 +41,8 @@ class SignUpViewController: UIViewController {
         textField.placeholder = "Password"
         textField.isSecureTextEntry = true
         textField.borderStyle = .roundedRect
+        textField.delegate = self
+        textField.autocapitalizationType = .none
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
@@ -53,6 +59,8 @@ class SignUpViewController: UIViewController {
         let textField = UITextField()
         textField.placeholder = "Location"
         textField.borderStyle = .roundedRect
+        textField.delegate = self
+        textField.autocapitalizationType = .none
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
@@ -104,15 +112,16 @@ class SignUpViewController: UIViewController {
             return
         }
 
-        viewModel.createUser(name: name, email: email, password: password, location: location) { error in
+        viewModel.createUser(name: name, email: email, password: password, location: location) { [weak self] error in
             if let error = error {
                 print("Failed to sign up:", error)
                 return
             }
             print("User signed up successfully.")
+            let profileSetupVC = ProfileSetupViewController()
+            self?.navigationController?.pushViewController(profileSetupVC, animated: true)
         }
     }
-    
 }
     
     //    private func navigateToSignIn() {

@@ -20,6 +20,7 @@ class ProfileSetupViewController: UIViewController {
         let textField = UITextField()
         textField.placeholder = "Skills (comma-separated)"
         textField.borderStyle = .roundedRect
+        textField.autocapitalizationType = .none
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
@@ -28,6 +29,7 @@ class ProfileSetupViewController: UIViewController {
         let textField = UITextField()
         textField.placeholder = "Location"
         textField.borderStyle = .roundedRect
+        textField.autocapitalizationType = .none
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()

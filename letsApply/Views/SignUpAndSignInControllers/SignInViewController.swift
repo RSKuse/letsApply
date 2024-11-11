@@ -8,15 +8,18 @@
 import UIKit
 import FirebaseAuth
 
-class SignInViewController: UIViewController {
+class SignInViewController: UIViewController, UITextFieldDelegate {
     
     let firestoreService = FirestoreService()
     private let viewModel = SignInViewModel()
     
+
     lazy var emailTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Email"
         textField.borderStyle = .roundedRect
+        textField.delegate = self
+        textField.autocapitalizationType = .none // Disable auto-capitalization
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
@@ -26,6 +29,8 @@ class SignInViewController: UIViewController {
         textField.placeholder = "Password"
         textField.isSecureTextEntry = true
         textField.borderStyle = .roundedRect
+        textField.delegate = self
+        textField.autocapitalizationType = .none
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
@@ -90,6 +95,23 @@ class SignInViewController: UIViewController {
         forgotPasswordButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
         forgotPasswordButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
     
+    }
+    
+    
+    func setupKeyboardDismissal() {
+        // Add gesture recognizer to dismiss the keyboard when tapping outside
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
+    }
+
+    @objc private func dismissKeyboard() {
+        view.endEditing(true) // Dismiss the keyboard
+    }
+
+    // UITextFieldDelegate
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder() // Dismiss the keyboard
+        return true
     }
     
     @objc private func handleSignIn() {
