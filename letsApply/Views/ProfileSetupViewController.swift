@@ -10,29 +10,25 @@ import UIKit
 import FirebaseAuth
 import FirebaseFirestore
 
-class ProfileSetupViewController: UIViewController {
+class ProfileSetupViewController: UIViewController, UITextFieldDelegate {
 
     let firestoreService = FirestoreService()
     var currentUser: UserProfile?
     private let viewModel = ProfileSetupViewModel()
-
+    
     lazy var skillsTextField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Skills (comma-separated)"
-        textField.borderStyle = .roundedRect
-        textField.autocapitalizationType = .none
-        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.configureTextField(placeholder: "Skills (comma-separated)", keyboardType: .emailAddress)
         return textField
     }()
-
+    
+    
     lazy var locationTextField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Location"
-        textField.borderStyle = .roundedRect
-        textField.autocapitalizationType = .none
-        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.configureTextField(placeholder: "Location", keyboardType: .emailAddress)
         return textField
     }()
+    
 
     lazy var saveButton: UIButton = {
         let button = UIButton(type: .system)
@@ -55,6 +51,7 @@ class ProfileSetupViewController: UIViewController {
         view.backgroundColor = .white
         setupUI()
         fetchUserProfileData()
+        setupKeyboardDismissal()
     }
 
     func setupUI() {
@@ -80,6 +77,20 @@ class ProfileSetupViewController: UIViewController {
         logoutButton.topAnchor.constraint(equalTo: saveButton.bottomAnchor, constant: 20).isActive = true
         logoutButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
         logoutButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+    }
+    
+    func setupKeyboardDismissal() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
+    }
+
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 
     private func fetchUserProfileData() {

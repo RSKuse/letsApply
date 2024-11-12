@@ -16,34 +16,22 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     private let viewModel = SignUpViewModel()
     
     
+    
     lazy var nameTextField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Full Name"
-        textField.borderStyle = .roundedRect
-        textField.delegate = self
-        textField.autocapitalizationType = .none
-        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.configureTextField(placeholder: "Full Name", keyboardType: .emailAddress)
         return textField
     }()
     
     lazy var emailTextField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Email"
-        textField.borderStyle = .roundedRect
-        textField.delegate = self
-        textField.autocapitalizationType = .none
-        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.configureTextField(placeholder: "Email", keyboardType: .emailAddress)
         return textField
     }()
     
     lazy var passwordTextField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Password"
-        textField.isSecureTextEntry = true
-        textField.borderStyle = .roundedRect
-        textField.delegate = self
-        textField.autocapitalizationType = .none
-        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.configureTextField(placeholder: "Password", isSecure: true)
         return textField
     }()
     
@@ -60,7 +48,9 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         textField.placeholder = "Location"
         textField.borderStyle = .roundedRect
         textField.delegate = self
-        textField.autocapitalizationType = .none
+        textField.autocapitalizationType = .none // Disable capital letters
+        textField.isUserInteractionEnabled = true // Allow interaction
+        textField.returnKeyType = .done // Adjust keyboard "Return" key
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
@@ -69,6 +59,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupUI()
+        setupKeyboardDismissal()
     }
     
     func setupUI() {
@@ -103,29 +94,63 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         signUpButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
     }
     
+    func setupKeyboardDismissal() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
     @objc private func handleSignUp() {
         guard let name = nameTextField.text, !name.isEmpty,
               let email = emailTextField.text, !email.isEmpty,
               let password = passwordTextField.text, !password.isEmpty,
               let location = locationTextField.text, !location.isEmpty else {
-            print("Please fill out all fields.")
+            showAlert(title: "Invalid Input", message: "Please fill out all fields.")
             return
         }
-
+        
+        if !isValidEmail(email) {
+            showAlert(title: "Invalid Email", message: "Please enter a valid email format.")
+            return
+        }
+        
         viewModel.createUser(name: name, email: email, password: password, location: location) { [weak self] error in
+            guard let self = self else { return }
             if let error = error {
-                print("Failed to sign up:", error)
-                return
+                self.showAlert(title: "Sign Up Failed", message: error.localizedDescription)
+            } else {
+                print("User signed up successfully.")
+                DispatchQueue.main.async {
+                    let profileSetupVC = ProfileSetupViewController()
+                    self.navigationController?.pushViewController(profileSetupVC, animated: true)
+                }
             }
-            print("User signed up successfully.")
-            let profileSetupVC = ProfileSetupViewController()
-            self?.navigationController?.pushViewController(profileSetupVC, animated: true)
         }
     }
-}
     
-    //    private func navigateToSignIn() {
-    //        let signInVC = SignInViewController()
-    //        navigationController?.setViewControllers([signInVC], animated: true)
-    //    }
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    private func isValidEmail(_ email: String) -> Bool {
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let emailTest = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
+        return emailTest.evaluate(with: email)
+    }
+}
+
+//    private func navigateToSignIn() {
+//        let signInVC = SignInViewController()
+//        navigationController?.setViewControllers([signInVC], animated: true)
+//    }
 
