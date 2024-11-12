@@ -16,22 +16,13 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
 
     lazy var emailTextField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Email"
-        textField.borderStyle = .roundedRect
-        textField.delegate = self
-        textField.autocapitalizationType = .none // Disable auto-capitalization
-        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.configureTextField(placeholder: "Email", keyboardType: .emailAddress)
         return textField
     }()
     
     lazy var passwordTextField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Password"
-        textField.isSecureTextEntry = true
-        textField.borderStyle = .roundedRect
-        textField.delegate = self
-        textField.autocapitalizationType = .none
-        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.configureTextField(placeholder: "Password", isSecure: true)
         return textField
     }()
     
@@ -63,6 +54,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupUI()
+        setupKeyboardDismissal()
     }
     
     func setupUI() {
@@ -99,20 +91,19 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     
     
     func setupKeyboardDismissal() {
-        // Add gesture recognizer to dismiss the keyboard when tapping outside
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
     }
 
     @objc private func dismissKeyboard() {
-        view.endEditing(true) // Dismiss the keyboard
+        view.endEditing(true)
     }
-
-    // UITextFieldDelegate
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder() // Dismiss the keyboard
+        textField.resignFirstResponder()
         return true
     }
+
     
     @objc private func handleSignIn() {
         guard let email = emailTextField.text, !email.isEmpty,
