@@ -16,7 +16,7 @@ class SignInViewModel {
                 return
             }
             guard let user = authResult?.user else {
-                completion(.failure(NSError(domain: "AuthError", code: -1, userInfo: nil)))
+                completion(.failure(NSError(domain: "AuthError", code: AuthErrorCode.userNotFound.rawValue, userInfo: nil)))
                 return
             }
             FirestoreService().fetchUserProfile(uid: user.uid, completion: completion)

@@ -13,7 +13,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     let firestoreService = FirestoreService()
     private let viewModel = SignInViewModel()
     
-
+    
     lazy var emailTextField: UITextField = {
         let textField = UITextField()
         textField.configureTextField(placeholder: "Email", keyboardType: .emailAddress)
@@ -86,15 +86,14 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         forgotPasswordButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
         forgotPasswordButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
         forgotPasswordButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
-    
+        
     }
-    
     
     func setupKeyboardDismissal() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
     }
-
+    
     @objc private func dismissKeyboard() {
         view.endEditing(true)
     }
@@ -103,39 +102,79 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         textField.resignFirstResponder()
         return true
     }
-
+    
     
     @objc private func handleSignIn() {
         guard let email = emailTextField.text, !email.isEmpty,
               let password = passwordTextField.text, !password.isEmpty else {
-            print("Please provide email and password.")
+            showAlert(title: "Invalid Input", message: "Please provide both email and password.")
             return
         }
-
-        viewModel.signIn(email: email, password: password) { result in
+        
+        if !isValidEmail(email) {
+            showAlert(title: "Invalid Email", message: "Please enter a valid email format.")
+            return
+        }
+        
+        viewModel.signIn(email: email, password: password) { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success(let profile):
                 print("User signed in successfully:", profile)
                 let profileSetupVC = ProfileSetupViewController()
                 self.navigationController?.pushViewController(profileSetupVC, animated: true)
             case .failure(let error):
-                print("Failed to sign in:", error)
+                if (error as NSError).code == AuthErrorCode.userNotFound.rawValue {
+                    self.showSignUpAlert()
+                } else {
+                    self.showAlert(title: "Sign In Failed", message: "Please enter a correct password." )
+                }
             }
         }
     }
-
+    
     @objc private func handleForgotPassword() {
         guard let email = emailTextField.text, !email.isEmpty else {
-            print("Please provide an email.")
+            showAlert(title: "email required", message: "Please provide an email.")
             return
         }
-        viewModel.resetPassword(email: email) { error in
-            if let error = error {
-                print("Failed to reset password:", error)
-                return
-            }
-            print("Password reset email sent.")
+        
+        if !isValidEmail(email) {
+            showAlert(title: "Invalid Email", message: "Please enter a valid email format.")
+            return
         }
+        
+        viewModel.resetPassword(email: email) { [weak self] error in
+            guard let self = self else { return }
+            if let error = error {
+                self.showAlert(title: "Password Reset Failed", message: error.localizedDescription)
+            } else {
+                self.showAlert(title: "Success", message: "Password reset email sent.")
+            }
+        }
+    }
+    
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    private func showSignUpAlert() {
+        let alert = UIAlertController(title: "Account Not Found", message: "This email is not registered. Would you like to sign up?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { [weak self] _ in
+            guard let self = self else { return }
+            let signUpVC = SignUpViewController()
+            self.navigationController?.pushViewController(signUpVC, animated: true)
+        }))
+        alert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    private func isValidEmail(_ email: String) -> Bool {
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let emailTest = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
+        return emailTest.evaluate(with: email)
     }
     
     @objc private func navigateToSignUp() {
@@ -144,3 +183,5 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     }
     
 }
+
+

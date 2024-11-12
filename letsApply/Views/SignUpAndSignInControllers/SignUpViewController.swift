@@ -98,13 +98,13 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
     }
-
+    
     @objc private func dismissKeyboard() {
         view.endEditing(true)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder() 
+        textField.resignFirstResponder()
         return true
     }
     
@@ -113,22 +113,39 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
               let email = emailTextField.text, !email.isEmpty,
               let password = passwordTextField.text, !password.isEmpty,
               let location = locationTextField.text, !location.isEmpty else {
-            print("Please fill out all fields.")
+            showAlert(title: "Invalid Input", message: "Please fill out all fields.")
+            return
+        }
+        
+        if !isValidEmail(email) {
+            showAlert(title: "Invalid Email", message: "Please enter a valid email format.")
             return
         }
         
         viewModel.createUser(name: name, email: email, password: password, location: location) { [weak self] error in
+            guard let self = self else { return }
             if let error = error {
-                print("Failed to sign up:", error)
-                return
-            }
-            print("User signed up successfully.")
-            
-            DispatchQueue.main.async {
-                let profileSetupVC = ProfileSetupViewController()
-                self?.navigationController?.pushViewController(profileSetupVC, animated: true)
+                self.showAlert(title: "Sign Up Failed", message: error.localizedDescription)
+            } else {
+                print("User signed up successfully.")
+                DispatchQueue.main.async {
+                    let profileSetupVC = ProfileSetupViewController()
+                    self.navigationController?.pushViewController(profileSetupVC, animated: true)
+                }
             }
         }
+    }
+    
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    private func isValidEmail(_ email: String) -> Bool {
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let emailTest = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
+        return emailTest.evaluate(with: email)
     }
 }
 
