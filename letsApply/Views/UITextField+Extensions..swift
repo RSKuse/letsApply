@@ -14,8 +14,8 @@ extension UITextField {
         self.keyboardType = keyboardType
         self.isSecureTextEntry = isSecure
         self.borderStyle = .roundedRect
-        self.autocapitalizationType = .none // Disable auto-capitalization
-        self.returnKeyType = .done // Enable "Done" key
+        self.autocapitalizationType = .none
+        self.returnKeyType = .done
         self.translatesAutoresizingMaskIntoConstraints = false
     }
 }

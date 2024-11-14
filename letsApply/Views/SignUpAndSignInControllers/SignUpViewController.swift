@@ -48,9 +48,9 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         textField.placeholder = "Location"
         textField.borderStyle = .roundedRect
         textField.delegate = self
-        textField.autocapitalizationType = .none // Disable capital letters
-        textField.isUserInteractionEnabled = true // Allow interaction
-        textField.returnKeyType = .done // Adjust keyboard "Return" key
+        textField.autocapitalizationType = .none 
+        textField.isUserInteractionEnabled = true
+        textField.returnKeyType = .done
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
