@@ -13,6 +13,7 @@ extension UITextField {
         self.placeholder = placeholder
         self.keyboardType = keyboardType
         self.isSecureTextEntry = isSecure
+        self.endEditing(true)
         self.borderStyle = .roundedRect
         self.autocapitalizationType = .none
         self.returnKeyType = .done
