@@ -27,6 +27,8 @@ class SignUpViewModel {
             }
 
             let profile = UserProfile(uid: user.uid, name: name, email: email, skills: [], location: location)
+            
+            
             self?.firestoreService.saveUserProfile(profile, completion: completion)
         }
     }

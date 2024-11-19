@@ -134,12 +134,13 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     }
     
     @objc private func handleForgotPassword() {
+        // ertwe
         guard let email = emailTextField.text, !email.isEmpty else {
             showAlert(title: "email required", message: "Please provide an email.")
             return
         }
         
-        if !isValidEmail(email) {
+        if !ValidationManager.shared.validateEmail(email) {
             showAlert(title: "Invalid Email", message: "Please enter a valid email format.")
             return
         }
@@ -169,12 +170,6 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         }))
         alert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
         present(alert, animated: true, completion: nil)
-    }
-    
-    private func isValidEmail(_ email: String) -> Bool {
-        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        let emailTest = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
-        return emailTest.evaluate(with: email)
     }
     
     @objc private func navigateToSignUp() {

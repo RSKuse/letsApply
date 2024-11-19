@@ -7,8 +7,10 @@
 
 import Foundation
 import FirebaseAuth
+import FirebaseFirestore
 
 class ProfileSetupViewModel {
+    
     private let firestoreService: FirestoreService
     private(set) var userProfile: UserProfile?
 
@@ -21,6 +23,7 @@ class ProfileSetupViewModel {
             completion(NSError(domain: "AuthError", code: -1, userInfo: nil))
             return
         }
+        
         firestoreService.fetchUserProfile(uid: user.uid) { [weak self] result in
             switch result {
             case .success(let profile):

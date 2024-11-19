@@ -7,8 +7,10 @@
 
 import Foundation
 import UIKit
+import FirebaseAuth
 
 class SplashScreenViewController: UIViewController {
+    
     lazy var logoImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "app_logo"))
         imageView.contentMode = .scaleAspectFit
@@ -61,10 +63,11 @@ class SplashScreenViewController: UIViewController {
             }
         }
         
-        // Navigate to Onboarding or Login after a delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            let onboardingVC = OnboardingViewController() // Replace with your next screen
-            self.navigationController?.pushViewController(onboardingVC, animated: true)
+        // This should go into a viewModel
+        if (Auth.auth().currentUser == nil) {
+            self.navigationController?.pushViewController(OnboardingViewController() , animated: true)
+        } else {
+            self.navigationController?.pushViewController(DashboardViewController() , animated: true)
         }
     }
 }
