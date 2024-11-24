@@ -13,4 +13,8 @@ struct UserProfile {
     var email: String
     var skills: [String]
     var location: String
+    
+    enum CodingKeys: String, CodingKey {
+        case uid, name, email, skills, location
+    }
 }

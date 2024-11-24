@@ -7,8 +7,7 @@
 
 import Foundation
 import UIKit
-import FirebaseAuth
-import FirebaseFirestore
+
 
 class SignUpViewController: UIViewController, UITextFieldDelegate {
     
@@ -117,36 +116,50 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
             return
         }
         
-        if !isValidEmail(email) {
+        if !ValidationManager.shared.validateEmail(email) {
             showAlert(title: "Invalid Email", message: "Please enter a valid email format.")
             return
         }
         
-        viewModel.createUser(name: name, email: email, password: password, location: location) { [weak self] error in
-            guard let self = self else { return }
-            if let error = error {
-                self.showAlert(title: "Sign Up Failed", message: error.localizedDescription)
-            } else {
-                print("User signed up successfully.")
-                DispatchQueue.main.async {
-                    let profileSetupVC = ProfileSetupViewController()
-                    self.navigationController?.pushViewController(profileSetupVC, animated: true)
+        showLoadingSpinner()
+        
+        viewModel.createUser(name: name, email: email, password: password, location: "Default Location") { [weak self] error in
+            DispatchQueue.main.async {
+                self?.hideLoadingSpinner()
+                
+                if let error = error {
+                    self?.showAlert(title: "Error", message: error.localizedDescription)
+                } else {
+                    self?.showAlert(title: "Success", message: "Account created successfully!")
                 }
             }
         }
     }
+        
+//        viewModel.createUser(name: name,
+//                             email: email,
+//                             password: password,
+//                             location: location) { [weak self] error in
+//            guard let self = self else { return }
+//            DispatchQueue.main.async {
+//                if let error = error {
+//                    self.showAlert(title: "Sign Up Failed", message: error.localizedDescription)
+//                } else {
+//                    print("User signed up successfully.")
+//                    let profileSetupVC = ProfileSetupViewController()
+//                    self.navigationController?.pushViewController(profileSetupVC, animated: true)
+//                }
+//            }
+//            
+//        }
+//    }
     
     private func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
     }
-    
-    private func isValidEmail(_ email: String) -> Bool {
-        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        let emailTest = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
-        return emailTest.evaluate(with: email)
-    }
+
 }
 
 //    private func navigateToSignIn() {
