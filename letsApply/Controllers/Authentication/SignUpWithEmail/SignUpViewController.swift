@@ -7,8 +7,7 @@
 
 import Foundation
 import UIKit
-import FirebaseAuth
-import FirebaseFirestore
+
 
 class SignUpViewController: UIViewController, UITextFieldDelegate {
     
@@ -122,23 +121,38 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
             return
         }
         
-        viewModel.createUser(name: name,
-                             email: email,
-                             password: password,
-                             location: location) { [weak self] error in
-            guard let self = self else { return }
+        showLoadingSpinner()
+        
+        viewModel.createUser(name: name, email: email, password: password, location: "Default Location") { [weak self] error in
             DispatchQueue.main.async {
+                self?.hideLoadingSpinner()
+                
                 if let error = error {
-                    self.showAlert(title: "Sign Up Failed", message: error.localizedDescription)
+                    self?.showAlert(title: "Error", message: error.localizedDescription)
                 } else {
-                    print("User signed up successfully.")
-                    let profileSetupVC = ProfileSetupViewController()
-                    self.navigationController?.pushViewController(profileSetupVC, animated: true)
+                    self?.showAlert(title: "Success", message: "Account created successfully!")
                 }
             }
-            
         }
     }
+        
+//        viewModel.createUser(name: name,
+//                             email: email,
+//                             password: password,
+//                             location: location) { [weak self] error in
+//            guard let self = self else { return }
+//            DispatchQueue.main.async {
+//                if let error = error {
+//                    self.showAlert(title: "Sign Up Failed", message: error.localizedDescription)
+//                } else {
+//                    print("User signed up successfully.")
+//                    let profileSetupVC = ProfileSetupViewController()
+//                    self.navigationController?.pushViewController(profileSetupVC, animated: true)
+//                }
+//            }
+//            
+//        }
+//    }
     
     private func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)

@@ -10,7 +10,10 @@ import FirebaseAuth
 
 class FirebaseAuthenticationService {
     
-    static let shared = FirebaseAuthenticationService(
+    // Singleton instance of the service
+    static let shared = FirebaseAuthenticationService()
+    
+    private init() {} // Make the initializer private to enforce singleton usage
     
     /**
      Email Sign Up
@@ -18,7 +21,9 @@ class FirebaseAuthenticationService {
     func signUp(email: String,
                 password: String,
                 completion: @escaping (Error?) -> Void) {
-        
+        Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
+            completion(error)
+        }
     }
     
     /**
@@ -27,7 +32,6 @@ class FirebaseAuthenticationService {
     func signIn(email: String,
                 password: String,
                 completion: @escaping (Result<UserProfile, Error>) -> Void) {
-        
         Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
             if let error = error {
                 completion(.failure(error))
@@ -40,12 +44,23 @@ class FirebaseAuthenticationService {
             FirestoreService().fetchUserProfile(uid: user.uid, completion: completion)
         }
     }
-
+    
+    /**
+     Reset Password
+     */
     func resetPassword(email: String, completion: @escaping (Error?) -> Void) {
         Auth.auth().sendPasswordReset(withEmail: email, completion: completion)
     }
     
-    func logout() {
-        
+    /**
+     Log Out
+     */
+    func signOut(completion: @escaping (Error?) -> Void) {
+        do {
+            try Auth.auth().signOut()
+            completion(nil)
+        } catch {
+            completion(error)
+        }
     }
 }

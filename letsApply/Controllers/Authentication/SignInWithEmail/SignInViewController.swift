@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import FirebaseAuth
 
 class SignInViewController: UIViewController, UITextFieldDelegate {
     
@@ -89,20 +88,6 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         
     }
     
-    func setupKeyboardDismissal() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        view.addGestureRecognizer(tapGesture)
-    }
-    
-    @objc private func dismissKeyboard() {
-        view.endEditing(true)
-    }
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
-    }
-    
     
     @objc private func handleSignIn() {
         guard let email = emailTextField.text, !email.isEmpty,
@@ -110,55 +95,64 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             showAlert(title: "Invalid Input", message: "Please provide both email and password.")
             return
         }
-        
-        if !isValidEmail(email) {
-            showAlert(title: "Invalid Email", message: "Please enter a valid email format.")
-            return
-        }
-        
-        viewModel.signIn(email: email, password: password) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let profile):
-                print("User signed in successfully:", profile)
-                let profileSetupVC = ProfileSetupViewController()
-                self.navigationController?.pushViewController(profileSetupVC, animated: true)
-            case .failure(let error):
-                if (error as NSError).code == AuthErrorCode.userNotFound.rawValue {
-                    self.showSignUpAlert()
-                } else {
-                    self.showAlert(title: "Sign In Failed", message: "Please enter a correct password." )
-                }
-            }
-        }
-    }
-    
-    @objc private func handleForgotPassword() {
-        // ertwe
-        guard let email = emailTextField.text, !email.isEmpty else {
-            showAlert(title: "email required", message: "Please provide an email.")
-            return
-        }
-        
+
         if !ValidationManager.shared.validateEmail(email) {
             showAlert(title: "Invalid Email", message: "Please enter a valid email format.")
             return
         }
-        
-        viewModel.resetPassword(email: email) { [weak self] error in
+
+        viewModel.signIn(email: email, password: password) { [weak self] result in
             guard let self = self else { return }
-            if let error = error {
-                self.showAlert(title: "Password Reset Failed", message: error.localizedDescription)
-            } else {
-                self.showAlert(title: "Success", message: "Password reset email sent.")
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let profile):
+                    print("User signed in successfully:", profile)
+                    let profileSetupVC = ProfileSetupViewController()
+                    self.navigationController?.pushViewController(profileSetupVC, animated: true)
+                case .failure(let error):
+                    self.showAlert(title: "Sign In Failed", message: error.localizedDescription)
+                }
             }
         }
     }
-    
+
+    @objc private func handleForgotPassword() {
+        guard let email = emailTextField.text, !email.isEmpty else {
+            showAlert(title: "Invalid Input", message: "Please provide an email.")
+            return
+        }
+
+        if !ValidationManager.shared.validateEmail(email) {
+            showAlert(title: "Invalid Email", message: "Please enter a valid email format.")
+            return
+        }
+
+        viewModel.resetPassword(email: email) { [weak self] error in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                if let error = error {
+                    self.showAlert(title: "Reset Failed", message: error.localizedDescription)
+                } else {
+                    self.showAlert(title: "Success", message: "Password reset email sent.")
+                }
+            }
+        }
+    }
+
     private func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
+    }
+
+    
+    func setupKeyboardDismissal() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
     }
     
     private func showSignUpAlert() {

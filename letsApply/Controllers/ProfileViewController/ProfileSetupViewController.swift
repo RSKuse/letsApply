@@ -9,8 +9,6 @@ import Foundation
 import UIKit
 
 // If you see yourself importing these into a view controller, something is wrong.
-import FirebaseAuth
-import FirebaseFirestore
 
 class ProfileSetupViewController: UIViewController, UITextFieldDelegate {
 

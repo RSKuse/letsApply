@@ -9,21 +9,35 @@ import Foundation
 import FirebaseAuth
 
 class SignInViewModel {
+    private let firebaseAuthService: FirebaseAuthenticationService
+    private let firestoreService: FirestoreService
+
+    init(firebaseAuthService: FirebaseAuthenticationService = .shared,
+         firestoreService: FirestoreService = FirestoreService()) {
+        self.firebaseAuthService = firebaseAuthService
+        self.firestoreService = firestoreService
+    }
+
     func signIn(email: String, password: String, completion: @escaping (Result<UserProfile, Error>) -> Void) {
-        Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
-            if let error = error {
+        firebaseAuthService.signIn(email: email, password: password) { [weak self] result in
+            switch result {
+            case .success:
+                guard let userId = Auth.auth().currentUser?.uid else {
+                    completion(.failure(NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "User ID not found."])))
+                    return
+                }
+                // Fetch user profile
+                self?.firestoreService.fetchUserProfile(uid: userId, completion: completion)
+            case .failure(let error):
                 completion(.failure(error))
-                return
             }
-            guard let user = authResult?.user else {
-                completion(.failure(NSError(domain: "AuthError", code: AuthErrorCode.userNotFound.rawValue, userInfo: nil)))
-                return
-            }
-            FirestoreService().fetchUserProfile(uid: user.uid, completion: completion)
         }
     }
 
     func resetPassword(email: String, completion: @escaping (Error?) -> Void) {
-        Auth.auth().sendPasswordReset(withEmail: email, completion: completion)
+        firebaseAuthService.resetPassword(email: email, completion: completion)
     }
 }
+    
+    
+    

@@ -49,5 +49,4 @@ class FirestoreService {
             completion(.success(profile))
         }
     }
-    
 }
