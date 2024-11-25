@@ -10,19 +10,27 @@ import Firebase
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    
+
     var window: UIWindow?
 
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        // Check for jailbroken devices
+        if SecurityManager.shared.isDeviceJailbroken() {
+            fatalError("This app does not support jailbroken devices.")
+        }
+
+        // Initialize Firebase
         FirebaseApp.configure()
+
+        // Set up the main window
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
-        window?.rootViewController = UINavigationController(rootViewController: SignInViewController())
+        window?.rootViewController = UINavigationController(rootViewController: SplashScreenViewController())
+
         return true
     }
 }
-
 

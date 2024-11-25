@@ -47,7 +47,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         textField.placeholder = "Location"
         textField.borderStyle = .roundedRect
         textField.delegate = self
-        textField.autocapitalizationType = .none 
+        textField.autocapitalizationType = .none
         textField.isUserInteractionEnabled = true
         textField.returnKeyType = .done
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -130,36 +130,39 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
                 if let error = error {
                     self?.showAlert(title: "Error", message: error.localizedDescription)
                 } else {
+                    print("User signed up successfully.")
+                    let profileSetupVC = ProfileSetupViewController()
+                    self?.navigationController?.pushViewController(profileSetupVC, animated: true)
                     self?.showAlert(title: "Success", message: "Account created successfully!")
                 }
             }
         }
     }
-        
-//        viewModel.createUser(name: name,
-//                             email: email,
-//                             password: password,
-//                             location: location) { [weak self] error in
-//            guard let self = self else { return }
-//            DispatchQueue.main.async {
-//                if let error = error {
-//                    self.showAlert(title: "Sign Up Failed", message: error.localizedDescription)
-//                } else {
-//                    print("User signed up successfully.")
-//                    let profileSetupVC = ProfileSetupViewController()
-//                    self.navigationController?.pushViewController(profileSetupVC, animated: true)
-//                }
-//            }
-//            
-//        }
-//    }
+    
+    //        viewModel.createUser(name: name,
+    //                             email: email,
+    //                             password: password,
+    //                             location: location) { [weak self] error in
+    //            guard let self = self else { return }
+    //            DispatchQueue.main.async {
+    //                if let error = error {
+    //                    self.showAlert(title: "Sign Up Failed", message: error.localizedDescription)
+    //                } else {
+    //                    print("User signed up successfully.")
+    //                    let profileSetupVC = ProfileSetupViewController()
+    //                    self.navigationController?.pushViewController(profileSetupVC, animated: true)
+    //                }
+    //            }
+    //
+    //        }
+    //    }
     
     private func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
     }
-
+    
 }
 
 //    private func navigateToSignIn() {
