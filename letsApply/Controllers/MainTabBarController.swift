@@ -22,9 +22,10 @@ class MainTabBarController: UITabBarController {
         let profileVC = UINavigationController(rootViewController: ProfileSetupViewController())
         profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.circle"), tag: 1)
         
-//        let jobListingsVC = UINavigationController(rootViewController: JobListingsViewController()) // Placeholder
-//        jobListingsVC.tabBarItem = UITabBarItem(title: "Jobs", image: UIImage(systemName: "briefcase"), tag: 2)
+        // Add Job Listings Tab
+        let jobListingsVC = UINavigationController(rootViewController: JobListingsViewController())
+        jobListingsVC.tabBarItem = UITabBarItem(title: "Jobs", image: UIImage(systemName: "briefcase"), tag: 2)
         
-        viewControllers = [dashboardVC, profileVC, /*jobListingsVC*/]
+        viewControllers = [dashboardVC, profileVC, jobListingsVC]
     }
 }

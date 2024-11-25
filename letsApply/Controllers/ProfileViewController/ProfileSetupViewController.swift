@@ -112,12 +112,21 @@ class ProfileSetupViewController: UIViewController, UITextFieldDelegate {
             return
         }
         let skillsArray = skillsText.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
-        viewModel.saveProfile(skills: skillsArray, location: locationText) { error in
+        viewModel.saveProfile(skills: skillsArray, location: locationText) { [weak self] error in
+            guard let self = self else { return }
             if let error = error {
                 print("Failed to save profile:", error)
                 return
             }
+
             print("Profile updated successfully.")
+            
+            // Transition to the MainTabBarController
+            let mainTabBarController = MainTabBarController()
+            if let window = UIApplication.shared.windows.first {
+                window.rootViewController = mainTabBarController
+                UIView.transition(with: window, duration: 0.5, options: .transitionFlipFromRight, animations: nil, completion: nil)
+            }
         }
     }
 
