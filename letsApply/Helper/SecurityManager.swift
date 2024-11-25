@@ -6,12 +6,15 @@
 //
 
 import Foundation
-import Foundation
 
 class SecurityManager {
     static let shared = SecurityManager()
 
     func isDeviceJailbroken() -> Bool {
+        #if targetEnvironment(simulator)
+        // Skip jailbreak check on the Simulator
+        return false
+        #else
         // Check for known jailbreak files
         let paths = ["/Applications/Cydia.app", "/usr/sbin/sshd", "/etc/apt"]
         for path in paths {
@@ -26,5 +29,6 @@ class SecurityManager {
         }
 
         return false
+        #endif
     }
 }
