@@ -49,4 +49,36 @@ class FirestoreService {
             completion(.success(profile))
         }
     }
+    
+    func fetchJobs(completion: @escaping ([Job]) -> Void) {
+        Firestore.firestore().collection(FirebaseCollections.jobs.rawValue).getDocuments { snapshot, error in
+            guard let documents = snapshot?.documents, error == nil else {
+                print("Error fetching jobs: \(error!.localizedDescription)")
+                completion([])
+                return
+            }
+            
+            guard let documents = snapshot?.documents else {
+                print("No documents found in 'jobs' collection.")
+                completion([])
+                return
+            }
+
+            let jobs = documents.compactMap { doc -> Job? in
+                let data = doc.data()
+                print("Fetched Job Document: \(data)")
+                guard let title = data[Job.CodingKeys.title.rawValue] as? String,
+                      let companyName = data[Job.CodingKeys.companyName.rawValue] as? String,
+                      let location = data[Job.CodingKeys.location.rawValue] as? String,
+                      let jobType = data[Job.CodingKeys.jobType.rawValue] as? String,
+                      let requiredSkills = data[Job.CodingKeys.requiredSkills.rawValue] as? [String],
+                      let description = data[Job.CodingKeys.description.rawValue] as? String else {
+                    print("Invalid job document format.")
+                    return nil
+                }
+                return Job(id: doc.documentID, title: title, companyName: companyName, location: location, jobType: jobType, requiredSkills: requiredSkills, description: description)
+            }
+            completion(jobs)
+        }
+    }
 }
