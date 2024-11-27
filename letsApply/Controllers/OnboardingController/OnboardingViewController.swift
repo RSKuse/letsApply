@@ -21,7 +21,7 @@ class OnboardingViewController: UIViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.register(OnboardingCell.self, forCellWithReuseIdentifier: "OnboardingCell")
+        collectionView.register(OnboardingCell.self, forCellWithReuseIdentifier: OnboardingCell.identifier)
         return collectionView
     }()
     
@@ -37,7 +37,7 @@ class OnboardingViewController: UIViewController {
     
     lazy var getStartedButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Get Started", for: .normal)
+        button.setTitle("Sign Up", for: .normal)
         button.addTarget(self, action: #selector(handleGetStarted), for: .touchUpInside)
         button.isHidden = true
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -83,8 +83,7 @@ class OnboardingViewController: UIViewController {
     }
     
     @objc private func handleGetStarted() {
-        let signInVC = SignInViewController()
-        navigationController?.pushViewController(signInVC, animated: true)
+        self.navigationController?.pushViewController(SignInViewController(), animated: true)
     }
 }
 
@@ -94,7 +93,7 @@ extension OnboardingViewController: UICollectionViewDataSource, UICollectionView
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "OnboardingCell", for: indexPath) as? OnboardingCell else {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: OnboardingCell.identifier, for: indexPath) as? OnboardingCell else {
             return UICollectionViewCell()
         }
         let slide = slides[indexPath.item]

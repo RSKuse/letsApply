@@ -14,8 +14,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     let firestoreService = FirestoreService()
     private let viewModel = SignUpViewModel()
     
-    
-    
     lazy var nameTextField: UITextField = {
         let textField = UITextField()
         textField.configureTextField(placeholder: "Full Name", keyboardType: .emailAddress)
