@@ -69,12 +69,16 @@ class DashboardViewController: UIViewController {
     }
 
     @objc private func handleLogout() {
-        viewModel.logout { success in
-            if success {
-                let signInVC = SignInViewController()
-                self.navigationController?.setViewControllers([signInVC], animated: true)
-            } else {
-                print("Failed to log out.")
+        viewModel.logout { [weak self] loggedOut in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                if loggedOut {
+                    let signInViewContrller = SignInViewController()
+                    signInViewContrller.modalTransitionStyle = .crossDissolve
+                    self.present(signInViewContrller, animated: true, completion: nil)
+                } else {
+                    print("Failed to log out.")
+                }
             }
         }
     }

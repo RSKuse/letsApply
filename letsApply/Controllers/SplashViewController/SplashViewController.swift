@@ -8,9 +8,9 @@
 import Foundation
 import UIKit
 
-class SplashScreenViewController: UIViewController {
+class SplashViewController: UIViewController {
 
-    private let viewModel = SplashScreenViewModel()
+    lazy var viewModel = SplashViewModel()
 
     lazy var logoImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "app_logo"))
@@ -33,7 +33,7 @@ class SplashScreenViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupUI()
-        animateLogo()
+        navigateToNextScreen()
     }
 
     private func setupUI() {
@@ -50,6 +50,7 @@ class SplashScreenViewController: UIViewController {
     }
 
     private func animateLogo() {
+        /*
         logoImageView.alpha = 0
         taglineLabel.alpha = 0
 
@@ -63,12 +64,28 @@ class SplashScreenViewController: UIViewController {
                 self.navigateToNextScreen()
             }
         }
+        */
     }
 
     private func navigateToNextScreen() {
-        viewModel.checkAuthentication { isAuthenticated in
-            let nextVC: UIViewController = isAuthenticated ? DashboardViewController() : SignInViewController()
-            self.navigationController?.setViewControllers([nextVC], animated: true)
+        viewModel.checkAuthentication { [weak self] authenticationState in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                switch authenticationState {
+                case .signUp:
+                    self.presentController(UINavigationController(rootViewController: OnboardingViewController()))
+                case .profileSetup:
+                    self.presentController(ProfileSetupViewController())
+                case .homeScreen:
+                    self.presentController(MainTabBarController())
+                }
+            }
         }
+    }
+    
+    private func presentController(_ controller: UIViewController) {
+        controller.modalTransitionStyle = .crossDissolve
+        controller.modalPresentationStyle = .fullScreen
+        self.present(controller, animated: true)
     }
 }
