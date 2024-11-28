@@ -42,7 +42,6 @@ class OnboardingCell: UICollectionViewCell {
         contentView.addSubview(titleLabel)
         contentView.addSubview(descriptionLabel)
         
-        
         titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20).isActive = true
         titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20).isActive = true
         titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
