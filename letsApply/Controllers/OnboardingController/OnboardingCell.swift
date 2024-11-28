@@ -9,7 +9,6 @@ import Foundation
 import UIKit
 
 class OnboardingCell: UICollectionViewCell {
-    static let cellIdentifier = "OnboardingCell"
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
