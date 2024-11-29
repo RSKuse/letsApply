@@ -100,7 +100,7 @@ class OnboardingViewController: UIViewController {
     }
 }
 
-// MARK: ScrollView + Timer
+// MARK: ScrollView +Timer
 extension OnboardingViewController: UIScrollViewDelegate {
     
     private func startAutoSlide() {
