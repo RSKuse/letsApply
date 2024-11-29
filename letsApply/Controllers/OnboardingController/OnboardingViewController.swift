@@ -9,18 +9,21 @@ import Foundation
 import UIKit
 
 class OnboardingViewController: UIViewController {
-    lazy var collectionView: UICollectionView = {
+    
+    var currentSlide: Int = 1
+    
+    lazy var onboardingCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumLineSpacing = 0
-
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.isPagingEnabled = true
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.register(OnboardingCell.self, forCellWithReuseIdentifier: OnboardingCell.identifier)
+        collectionView.register(OnboardingCell.self,
+                                forCellWithReuseIdentifier: OnboardingCell.identifier)
         return collectionView
     }()
 
@@ -67,23 +70,16 @@ class OnboardingViewController: UIViewController {
         startAutoSlide()
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-            layout.itemSize = CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
-        }
-    }
-
     private func setupUI() {
-        view.addSubview(collectionView)
+        view.addSubview(onboardingCollectionView)
         view.addSubview(pageControl)
         view.addSubview(signUpButton)
         view.addSubview(signInButton)
 
-        collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        collectionView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        collectionView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        onboardingCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        onboardingCollectionView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        onboardingCollectionView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        onboardingCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
 
         pageControl.bottomAnchor.constraint(equalTo: signUpButton.topAnchor, constant: -20).isActive = true
         pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -102,40 +98,66 @@ class OnboardingViewController: UIViewController {
     @objc private func handleSignIn() {
         self.navigationController?.pushViewController(SignInViewController(), animated: true)
     }
+}
 
+// MARK: ScrollView +Timer
+extension OnboardingViewController: UIScrollViewDelegate {
+    
     private func startAutoSlide() {
         autoSlideTimer?.invalidate() // Prevent duplicate timers
-        autoSlideTimer = Timer.scheduledTimer(timeInterval: 3.0, target: self, selector: #selector(autoSlideToNextPage), userInfo: nil, repeats: true)
+        autoSlideTimer = Timer.scheduledTimer(timeInterval: 3.0,
+                                              target: self,
+                                              selector: #selector(autoSlideToNextPage),
+                                              userInfo: nil,
+                                              repeats: true)
     }
 
+    @objc private func autoSlideToNextPage() {
+        guard slides.count > 1 else { return }
+
+        // Update UI
+        onboardingCollectionView.scrollToItem(at: IndexPath(item: currentSlide, section: 0),
+                                              at: .centeredHorizontally,
+                                              animated: true)
+        pageControl.currentPage = currentSlide
+
+        // Increment Slides
+        currentSlide += 1
+
+        // Display/hide Buttons
+        signUpButton.isHidden = currentSlide != slides.count
+        signInButton.isHidden = currentSlide != slides.count
+
+        // Reset Slide Count
+        if (currentSlide == slides.count) {
+            currentSlide = 0
+        }
+    }
+    
     private func stopAutoSlide() {
         autoSlideTimer?.invalidate()
         autoSlideTimer = nil
     }
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        stopAutoSlide() // Stop auto-sliding when the user interacts
+    }
 
-    @objc private func autoSlideToNextPage() {
-        guard slides.count > 1, collectionView.frame.width > 0 else { return }
-        
-        // Calculate the next page
-        let nextIndex = (pageControl.currentPage + 1) % slides.count
-        let indexPath = IndexPath(item: nextIndex, section: 0) // Define the indexPath
-        
-        // Scroll to the next item
-        collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
-        pageControl.currentPage = nextIndex
-
-        print("Content Offset After Scroll: \(collectionView.contentOffset.x)")
-
-        // Show or hide buttons on the last slide
-        let isLastPage = nextIndex == slides.count - 1
-        signUpButton.isHidden = !isLastPage
-        signInButton.isHidden = !isLastPage
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        startAutoSlide() // Resume auto-sliding after user interaction
     }
 }
 
+
+// MARK: Collection View
 extension OnboardingViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return slides.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: view.frame.width, height: 700.0)
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -147,14 +169,7 @@ extension OnboardingViewController: UICollectionViewDataSource, UICollectionView
         return cell
     }
 
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        stopAutoSlide() // Stop auto-sliding when the user interacts
-    }
-
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        startAutoSlide() // Resume auto-sliding after user interaction
-    }
-
+    /*
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard scrollView.frame.width > 0 else { return } // Ensure frame width is valid
         let currentPage = Int((scrollView.contentOffset.x / scrollView.frame.width).rounded())
@@ -165,4 +180,5 @@ extension OnboardingViewController: UICollectionViewDataSource, UICollectionView
         signUpButton.isHidden = !isLastPage
         signInButton.isHidden = !isLastPage
     }
+    */
 }

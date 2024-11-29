@@ -9,7 +9,6 @@ import Foundation
 import UIKit
 
 class OnboardingCell: UICollectionViewCell {
-    static let cellIdentifier = "OnboardingCell"
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
@@ -30,7 +29,6 @@ class OnboardingCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        //        contentView.backgroundColor = .red
         setupUI()
     }
     
