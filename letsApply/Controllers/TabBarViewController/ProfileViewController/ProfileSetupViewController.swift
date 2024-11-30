@@ -137,6 +137,7 @@ class ProfileSetupViewController: UIViewController, UITextFieldDelegate {
                 return
             }
             self.navigationController?.popToRootViewController(animated: true)
+          
         }
     }
 }

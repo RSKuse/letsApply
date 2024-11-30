@@ -24,9 +24,9 @@ class JobFiltersViewController: UIViewController {
     }
 
     // Example of applying filters
-    private func applyFilters() {
-        let filters = JobFilters(skills: ["iOS"], location: "Remote", jobType: "Full-Time")
-        delegate?.applyFilters(filters)
-        navigationController?.popViewController(animated: true)
-    }
+//    private func applyFilters() {
+//        let filters = JobFilters(skills: ["iOS"], location: "Remote", jobType: "Full-Time")
+//        delegate?.applyFilters(filters)
+////        navigationController?.popViewController(animated: true)
+//    }
 }

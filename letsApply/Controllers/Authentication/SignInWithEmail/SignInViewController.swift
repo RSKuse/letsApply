@@ -105,10 +105,10 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             guard let self = self else { return }
             DispatchQueue.main.async {
                 switch result {
-                case .success(let profile):
-                    print("User signed in successfully:", profile)
-                    let profileSetupVC = ProfileSetupViewController()
-                    self.navigationController?.pushViewController(profileSetupVC, animated: true)
+                case .success(let dashboard):
+                    print("User signed in successfully:", dashboard)
+                    let dashboardVC = DashboardViewController()
+                    self.navigationController?.pushViewController(dashboardVC, animated: true)
                 case .failure(let error):
                     self.showAlert(title: "Sign In Failed", message: error.localizedDescription)
                 }

@@ -52,32 +52,46 @@ class FirestoreService {
     
     func fetchJobs(completion: @escaping ([Job]) -> Void) {
         Firestore.firestore().collection(FirebaseCollections.jobs.rawValue).getDocuments { snapshot, error in
+            // Check for errors and ensure there are documents
             guard let documents = snapshot?.documents, error == nil else {
-                print("Error fetching jobs: \(error!.localizedDescription)")
-                completion([])
-                return
-            }
-            
-            guard let documents = snapshot?.documents else {
-                print("No documents found in 'jobs' collection.")
-                completion([])
+                print("Error fetching jobs: \(error?.localizedDescription ?? "Unknown error")")
+                completion([]) // Return an empty array on error
                 return
             }
 
-            let jobs = documents.compactMap { doc -> Job? in
-                let data = doc.data()
+            var jobs: [Job] = [] // Array to store Job objects
+
+            // Iterate through the documents using a for-loop
+            for document in documents {
+                let data = document.data() // Extract the data dictionary
                 print("Fetched Job Document: \(data)")
-                guard let title = data[Job.CodingKeys.title.rawValue] as? String,
-                      let companyName = data[Job.CodingKeys.companyName.rawValue] as? String,
-                      let location = data[Job.CodingKeys.location.rawValue] as? String,
-                      let jobType = data[Job.CodingKeys.jobType.rawValue] as? String,
-                      let requiredSkills = data[Job.CodingKeys.requiredSkills.rawValue] as? [String],
-                      let description = data[Job.CodingKeys.description.rawValue] as? String else {
-                    print("Invalid job document format.")
-                    return nil
+
+                // Parse each field safely
+                if let title = data[Job.CodingKeys.title.rawValue] as? String,
+                   let companyName = data[Job.CodingKeys.companyName.rawValue] as? String,
+                   let location = data[Job.CodingKeys.location.rawValue] as? String,
+                   let jobType = data[Job.CodingKeys.jobType.rawValue] as? String,
+                   let requiredSkills = data[Job.CodingKeys.requiredSkills.rawValue] as? [String],
+                   let description = data[Job.CodingKeys.description.rawValue] as? String {
+                    
+                    // Create a Job object and add it to the jobs array
+                    let job = Job(
+                        id: document.documentID,
+                        title: title,
+                        companyName: companyName,
+                        location: location,
+                        jobType: jobType,
+                        requiredSkills: requiredSkills,
+                        description: description
+                    )
+                    jobs.append(job)
+                } else {
+                    print("Invalid job document format for document ID: \(document.documentID)")
+                    print("Data: \(data)")
                 }
-                return Job(id: doc.documentID, title: title, companyName: companyName, location: location, jobType: jobType, requiredSkills: requiredSkills, description: description)
             }
+
+            // Call the completion handler with the jobs array
             completion(jobs)
         }
     }
