@@ -73,9 +73,10 @@ class DashboardViewController: UIViewController {
             DispatchQueue.main.async {
                 guard let self else { return }
                 if loggedOut {
-                    let signInViewContrller = SignInViewController()
-                    signInViewContrller.modalTransitionStyle = .crossDissolve
-                    self.present(signInViewContrller, animated: true, completion: nil)
+                    let signInViewController = UINavigationController(rootViewController: SignInViewController())
+                    signInViewController.modalTransitionStyle = .crossDissolve
+                    signInViewController.modalPresentationStyle = .fullScreen
+                    self.present(signInViewController, animated: true, completion: nil)
                 } else {
                     print("Failed to log out.")
                 }

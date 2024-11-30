@@ -50,6 +50,7 @@ class FirestoreService {
         }
     }
     
+    /*
     func fetchJobs(completion: @escaping ([Job]) -> Void) {
         Firestore.firestore().collection(FirebaseCollections.jobs.rawValue).getDocuments { snapshot, error in
             guard let documents = snapshot?.documents, error == nil else {
@@ -79,6 +80,37 @@ class FirestoreService {
                 return Job(id: doc.documentID, title: title, companyName: companyName, location: location, jobType: jobType, requiredSkills: requiredSkills, description: description)
             }
             completion(jobs)
+        }
+    }
+    */
+    
+    func fetchJobs(completion: @escaping ([Job], Error?) -> Void) {
+        Firestore
+            .firestore()
+            .collection(FirebaseCollections.jobs.rawValue)
+            .getDocuments { (snapshot, error) in
+                
+                if let error = error {
+                    print("Error fetching documents: \(error)")
+                    completion([], error)
+                    return
+                }
+                
+                var jobs: [Job] = []
+                for document in snapshot?.documents ?? [] {
+                    do {
+                        let job = try document.data(as: Job.self)
+                        jobs.append(job)
+                    } catch {
+                        print("Error decoding document: \(error)")
+                        completion([], error)
+                        return
+                    }
+                }
+            
+                print(jobs)
+                
+                completion(jobs, nil)
         }
     }
 }

@@ -14,20 +14,27 @@ class JobListingsViewModel {
     var jobs: [Job] = []
 
     func fetchJobs(completion: @escaping () -> Void) {
-        firestoreService.fetchJobs { [weak self] fetchedJobs in
-            self?.jobs = fetchedJobs
-            completion()
+        firestoreService.fetchJobs { [weak self] (jobs, error) in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.jobs = jobs
+                completion()
+            }
+            
         }
     }
 
     func applyFilters(filters: JobFilters, completion: @escaping () -> Void) {
-        firestoreService.fetchJobs { [weak self] fetchedJobs in
-            self?.jobs = fetchedJobs.filter { job in
-                return (filters.skills.isEmpty || filters.skills.contains(where: { job.requiredSkills.contains($0) })) &&
-                       (filters.location.isEmpty || job.location.contains(filters.location)) &&
-                       (filters.jobType.isEmpty || job.jobType == filters.jobType)
+        firestoreService.fetchJobs { [weak self] (jobs, error) in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.jobs = jobs.filter { job in
+                    return (filters.skills.isEmpty || filters.skills.contains(where: { job.requiredSkills.contains($0) })) &&
+                           (filters.location.isEmpty || job.location.contains(filters.location)) &&
+                           (filters.jobType.isEmpty || job.jobType == filters.jobType)
+                }
+                completion()
             }
-            completion()
         }
     }
 }

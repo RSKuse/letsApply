@@ -6,9 +6,10 @@
 //
 
 import Foundation
+import FirebaseFirestoreSwift
 
 struct Job: Codable {
-    let id: String
+    @DocumentID var uid: String? // Maps to Firestore's document ID
     let title: String
     let companyName: String
     let location: String
@@ -16,14 +17,6 @@ struct Job: Codable {
     let requiredSkills: [String]
     let description: String
     
-    enum CodingKeys: String, CodingKey {
-        case id
-        case title
-        case companyName
-        case location
-        case jobType
-        case requiredSkills
-        case description
-    }
+    // CodingKeys can be omitted if field names match exactly
 }
 
