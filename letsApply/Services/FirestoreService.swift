@@ -55,13 +55,11 @@ class FirestoreService {
             // Check for errors and ensure there are documents
             guard let documents = snapshot?.documents, error == nil else {
                 print("Error fetching jobs: \(error?.localizedDescription ?? "Unknown error")")
-                completion([]) // Return an empty array on error
-                return
+                return completion([]) // Return an empty array on error
             }
 
             var jobs: [Job] = [] // Array to store Job objects
-            print(documents.count)
-
+           
             // Iterate through the documents using a for-loop
             for document in documents {
                 let data = document.data() // Extract the data dictionary
@@ -78,7 +76,6 @@ class FirestoreService {
             }
 
             // Call the completion handler with the jobs array
-            print("Jobs Fetched: \(jobs.count)")
             completion(jobs)
         }
     }
