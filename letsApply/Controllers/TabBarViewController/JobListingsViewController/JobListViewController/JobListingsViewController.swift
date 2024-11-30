@@ -68,12 +68,4 @@ class JobListingsViewController: UIViewController {
     }
 }
 
-extension JobListingsViewController: JobFiltersDelegate {
-    func applyFilters(_ filters: JobFilters) {
-        viewModel.applyFilters(filters: filters) {
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
-        }
-    }
-}
+
