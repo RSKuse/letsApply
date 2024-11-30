@@ -60,38 +60,25 @@ class FirestoreService {
             }
 
             var jobs: [Job] = [] // Array to store Job objects
+            print(documents.count)
 
             // Iterate through the documents using a for-loop
             for document in documents {
                 let data = document.data() // Extract the data dictionary
-                print("Fetched Job Document: \(data)")
-
-                // Parse each field safely
-                if let title = data[Job.CodingKeys.title.rawValue] as? String,
-                   let companyName = data[Job.CodingKeys.companyName.rawValue] as? String,
-                   let location = data[Job.CodingKeys.location.rawValue] as? String,
-                   let jobType = data[Job.CodingKeys.jobType.rawValue] as? String,
-                   let requiredSkills = data[Job.CodingKeys.requiredSkills.rawValue] as? [String],
-                   let description = data[Job.CodingKeys.description.rawValue] as? String {
-                    
-                    // Create a Job object and add it to the jobs array
-                    let job = Job(
-                        id: document.documentID,
-                        title: title,
-                        companyName: companyName,
-                        location: location,
-                        jobType: jobType,
-                        requiredSkills: requiredSkills,
-                        description: description
-                    )
-                    jobs.append(job)
-                } else {
-                    print("Invalid job document format for document ID: \(document.documentID)")
-                    print("Data: \(data)")
-                }
+                let job = Job(
+                    id: document.documentID,
+                    title: data[Job.CodingKeys.title.rawValue] as? String ?? "",
+                    companyName: data[Job.CodingKeys.companyName.rawValue] as? String ?? "",
+                    location:  data[Job.CodingKeys.location.rawValue] as? String ?? "",
+                    jobType: data[Job.CodingKeys.jobType.rawValue] as? String ?? "",
+                    requiredSkills: data[Job.CodingKeys.requiredSkills.rawValue] as? [String] ?? [],
+                    description: data[Job.CodingKeys.description.rawValue] as? String ?? ""
+                )
+                jobs.append(job)
             }
 
             // Call the completion handler with the jobs array
+            print("Jobs Fetched: \(jobs.count)")
             completion(jobs)
         }
     }
