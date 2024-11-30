@@ -121,7 +121,6 @@ class ProfileSetupViewController: UIViewController, UITextFieldDelegate {
             
             print("Profile updated successfully.")
             
-            // Transition to the MainTabBarController
             let mainTabBarController = MainTabBarController()
             if let window = UIApplication.shared.windows.first {
                 window.rootViewController = mainTabBarController
@@ -137,7 +136,6 @@ class ProfileSetupViewController: UIViewController, UITextFieldDelegate {
                 print("Failed to log out:", error)
                 return
             }
-    
             let signInViewController = UINavigationController(rootViewController: SignInViewController())
             signInViewController.modalTransitionStyle = .crossDissolve
             signInViewController.modalPresentationStyle = .fullScreen
