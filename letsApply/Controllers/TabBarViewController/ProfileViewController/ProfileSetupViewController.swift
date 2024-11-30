@@ -136,11 +136,20 @@ class ProfileSetupViewController: UIViewController, UITextFieldDelegate {
                 print("Failed to log out:", error)
                 return
             }
-            let signInViewController = UINavigationController(rootViewController: SignInViewController())
-            signInViewController.modalTransitionStyle = .crossDissolve
-            signInViewController.modalPresentationStyle = .fullScreen
-            self.present(signInViewController, animated: true, completion: nil)
+            
+            DispatchQueue.main.async {
+                let signInViewController = UINavigationController(rootViewController: SignInViewController())
+                signInViewController.modalTransitionStyle = .crossDissolve
+                signInViewController.modalPresentationStyle = .fullScreen
+                
+                if let window = UIApplication.shared.windows.first {
+                    window.rootViewController = signInViewController
+                    window.makeKeyAndVisible()
+                    
+                    UIView.transition(with: window, duration: 0.5, options: .transitionCrossDissolve, animations: nil, completion: nil)
+                }
             }
         }
     }
+}
 
