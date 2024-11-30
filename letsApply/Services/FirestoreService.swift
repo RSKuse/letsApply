@@ -52,32 +52,30 @@ class FirestoreService {
     
     func fetchJobs(completion: @escaping ([Job]) -> Void) {
         Firestore.firestore().collection(FirebaseCollections.jobs.rawValue).getDocuments { snapshot, error in
+            // Check for errors and ensure there are documents
             guard let documents = snapshot?.documents, error == nil else {
-                print("Error fetching jobs: \(error!.localizedDescription)")
-                completion([])
-                return
-            }
-            
-            guard let documents = snapshot?.documents else {
-                print("No documents found in 'jobs' collection.")
-                completion([])
-                return
+                print("Error fetching jobs: \(error?.localizedDescription ?? "Unknown error")")
+                return completion([]) // Return an empty array on error
             }
 
-            let jobs = documents.compactMap { doc -> Job? in
-                let data = doc.data()
-                print("Fetched Job Document: \(data)")
-                guard let title = data[Job.CodingKeys.title.rawValue] as? String,
-                      let companyName = data[Job.CodingKeys.companyName.rawValue] as? String,
-                      let location = data[Job.CodingKeys.location.rawValue] as? String,
-                      let jobType = data[Job.CodingKeys.jobType.rawValue] as? String,
-                      let requiredSkills = data[Job.CodingKeys.requiredSkills.rawValue] as? [String],
-                      let description = data[Job.CodingKeys.description.rawValue] as? String else {
-                    print("Invalid job document format.")
-                    return nil
-                }
-                return Job(id: doc.documentID, title: title, companyName: companyName, location: location, jobType: jobType, requiredSkills: requiredSkills, description: description)
+            var jobs: [Job] = [] // Array to store Job objects
+           
+            // Iterate through the documents using a for-loop
+            for document in documents {
+                let data = document.data() // Extract the data dictionary
+                let job = Job(
+                    id: document.documentID,
+                    title: data[Job.CodingKeys.title.rawValue] as? String ?? "",
+                    companyName: data[Job.CodingKeys.companyName.rawValue] as? String ?? "",
+                    location:  data[Job.CodingKeys.location.rawValue] as? String ?? "",
+                    jobType: data[Job.CodingKeys.jobType.rawValue] as? String ?? "",
+                    requiredSkills: data[Job.CodingKeys.requiredSkills.rawValue] as? [String] ?? [],
+                    description: data[Job.CodingKeys.description.rawValue] as? String ?? ""
+                )
+                jobs.append(job)
             }
+
+            // Call the completion handler with the jobs array
             completion(jobs)
         }
     }

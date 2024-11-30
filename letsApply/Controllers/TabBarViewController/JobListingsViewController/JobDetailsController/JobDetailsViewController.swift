@@ -11,8 +11,7 @@ import UIKit
 class JobDetailsViewController: UIViewController {
 
     private let job: Job
-
-    // Initialize with the selected job
+    
     init(job: Job) {
         self.job = job
         super.init(nibName: nil, bundle: nil)
@@ -22,7 +21,6 @@ class JobDetailsViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // UI Elements
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
@@ -81,7 +79,6 @@ class JobDetailsViewController: UIViewController {
         view.addSubview(descriptionTextView)
         view.addSubview(applyButton)
 
-        // Layout constraints
         titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
         titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
 

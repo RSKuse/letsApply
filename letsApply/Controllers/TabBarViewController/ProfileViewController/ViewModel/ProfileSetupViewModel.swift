@@ -45,7 +45,6 @@ class ProfileSetupViewModel {
         firestoreService.saveUserProfile(profile, completion: completion)
     }
 
-    // Add the logout method
     func logout(completion: @escaping (Error?) -> Void) {
         do {
             try Auth.auth().signOut()

@@ -69,6 +69,11 @@ class DashboardViewController: UIViewController {
     }
 
     @objc private func handleLogout() {
+        let signInViewContrller = UINavigationController(rootViewController: SignInViewController())
+        signInViewContrller.modalPresentationStyle = .fullScreen
+        signInViewContrller.modalTransitionStyle = .crossDissolve
+        self.present(signInViewContrller, animated: true, completion: nil)
+        /*
         viewModel.logout { [weak self] loggedOut in
             DispatchQueue.main.async {
                 guard let self else { return }
@@ -81,6 +86,7 @@ class DashboardViewController: UIViewController {
                 }
             }
         }
+        */
     }
 }
     

@@ -10,8 +10,6 @@ import UIKit
 
 class JobTableViewCell: UITableViewCell {
 
-    static let identifier = "JobTableViewCell"
-
     // UI Elements
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
@@ -74,13 +72,14 @@ class JobTableViewCell: UITableViewCell {
         contentView.addSubview(applyNowButton)
 
         // Constraints
-        titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10).isActive = true
+        titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16).isActive = true
         titleLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 10).isActive = true
 
         companyLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5).isActive = true
         companyLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 10).isActive = true
 
         locationLabel.topAnchor.constraint(equalTo: companyLabel.bottomAnchor, constant: 5).isActive = true
+        locationLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16).isActive = true
         locationLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 10).isActive = true
 
         saveJobButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
