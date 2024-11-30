@@ -9,9 +9,9 @@ import Foundation
 import UIKit
 
 class JobListingsViewController: UIViewController {
-
+    
     private let viewModel = JobListingsViewModel()
-
+    
     // UI Elements
     lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -21,7 +21,7 @@ class JobListingsViewController: UIViewController {
         tableView.delegate = self
         return tableView
     }()
-
+    
     lazy var filterButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Filters", for: .normal)
@@ -29,7 +29,7 @@ class JobListingsViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -37,22 +37,22 @@ class JobListingsViewController: UIViewController {
         setupUI()
         fetchJobListings()
     }
-
-    private func setupUI() {
+    
+    func setupUI() {
         view.addSubview(filterButton)
         view.addSubview(tableView)
-
+        
         // Constraints
         filterButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
         filterButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
-
+        
         tableView.topAnchor.constraint(equalTo: filterButton.bottomAnchor, constant: 10).isActive = true
         tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
     }
-
-    private func fetchJobListings() {
+    
+    func fetchJobListings() {
         viewModel.fetchJobs { [weak self] in
             DispatchQueue.main.async {
                 print("Jobs fetched for display: \(self?.viewModel.jobs)")
@@ -60,7 +60,7 @@ class JobListingsViewController: UIViewController {
             }
         }
     }
-
+    
     @objc private func openFilters() {
         let filtersVC = JobFiltersViewController()
         filtersVC.delegate = self
@@ -68,13 +68,12 @@ class JobListingsViewController: UIViewController {
     }
 }
 
-// MARK: - TableView DataSource & Delegate
 extension JobListingsViewController: UITableViewDataSource, UITableViewDelegate {
-
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.jobs.count
     }
-
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: JobTableViewCell.identifier, for: indexPath) as? JobTableViewCell else {
             return UITableViewCell()
@@ -83,7 +82,7 @@ extension JobListingsViewController: UITableViewDataSource, UITableViewDelegate 
         cell.configure(with: job)
         return cell
     }
-
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let job = viewModel.jobs[indexPath.row]
         let jobDetailsVC = JobDetailsViewController(job: job)
@@ -91,7 +90,6 @@ extension JobListingsViewController: UITableViewDataSource, UITableViewDelegate 
     }
 }
 
-// MARK: - Filters Delegate
 extension JobListingsViewController: JobFiltersDelegate {
     func applyFilters(_ filters: JobFilters) {
         viewModel.applyFilters(filters: filters) {
