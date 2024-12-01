@@ -38,4 +38,21 @@ class SignUpViewModel {
             self?.firestoreService.saveUserProfile(profile, completion: completion)
         }
     }
+    
+    func updateProfilePictureUrl(_ url: String, for uid: String, completion: @escaping (Error?) -> Void) {
+        // Fetch the existing user profile
+        firestoreService.fetchUserProfile(uid: uid) { [weak self] result in
+            switch result {
+            case .success(var profile):
+                // Update the profile picture URL
+                profile.profilePictureUrl = url
+                
+                // Save the updated profile
+                self?.firestoreService.saveUserProfile(profile, completion: completion)
+                
+            case .failure(let error):
+                completion(error)
+            }
+        }
+    }
 }

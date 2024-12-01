@@ -6,9 +6,10 @@
 //
 
 import Foundation
+import FirebaseAuth
 import UIKit
 
-class SignUpViewController: UIViewController, UITextFieldDelegate {
+class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     let firestoreService = FirestoreService()
     private let viewModel = SignUpViewModel()
@@ -48,8 +49,18 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
             title: "Sign Up",
             backgroundColor: .systemBlue,
             target: self,
-            action: #selector(handleSignUp)
-        )
+            action: #selector(handleSignUp))
+    }()
+    
+    lazy var profileImageView: UIImageView = {
+        let imageView = UIImageView(image: UIImage(systemName: "person.circle"))
+        imageView.contentMode = .scaleAspectFit
+        imageView.layer.cornerRadius = 50
+        imageView.clipsToBounds = true
+        imageView.isUserInteractionEnabled = true
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(selectProfilePicture)))
+        return imageView
     }()
 
     override func viewDidLoad() {
@@ -65,6 +76,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         view.addSubview(passwordTextField)
         view.addSubview(locationTextField)
         view.addSubview(signUpButton)
+        view.addSubview(profileImageView)
 
         nameTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40).isActive = true
         nameTextField.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
@@ -90,6 +102,11 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         signUpButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         signUpButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
         signUpButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        
+        profileImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
+        profileImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        profileImageView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        profileImageView.heightAnchor.constraint(equalToConstant: 100).isActive = true
     }
 
     func setupKeyboardDismissal() {
@@ -110,32 +127,46 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         guard let name = nameTextField.text, !name.isEmpty,
               let email = emailTextField.text, !email.isEmpty,
               let password = passwordTextField.text, !password.isEmpty,
-              let location = locationTextField.text, !location.isEmpty else {
+              let location = locationTextField.text, !location.isEmpty,
+              let profileImage = profileImageView.image else {
             showAlert(title: "Invalid Input", message: "Please fill out all fields.")
             return
         }
 
-        if !ValidationManager.shared.validateEmail(email) {
-            showAlert(title: "Invalid Email", message: "Please enter a valid email format.")
-            return
-        }
-
-        // Assuming `showLoadingSpinner()` and `hideLoadingSpinner()` are from a utility or superclass
-        showLoadingSpinner()
-
-        viewModel.createUser(name: name, email: email, password: password, location: "Default Location") { [weak self] error in
-            DispatchQueue.main.async {
-                self?.hideLoadingSpinner()
-
-                if let error = error {
-                    self?.showAlert(title: "Error", message: error.localizedDescription)
-                } else {
-                    print("User signed up successfully.")
-                    let profileSetupVC = ProfileSetupViewController()
-                    self?.navigationController?.pushViewController(profileSetupVC, animated: true)
-                    self?.showAlert(title: "Success", message: "Account created successfully!")
+        viewModel.createUser(name: name, email: email, password: password, location: location) { [weak self] error in
+            guard let self = self else { return }
+            if let error = error {
+                print("Failed to create user:", error.localizedDescription)
+                return
+            }
+            
+            // Upload the profile picture to Firebase
+            guard let uid = Auth.auth().currentUser?.uid else { return }
+            ProfilePictureService.shared.uploadProfilePicture(uid: uid, image: profileImage) { result in
+                switch result {
+                case .success(let url):
+                    // Save the profile picture URL
+                    self.viewModel.updateProfilePictureUrl(url, for: uid) { error in
+                        if let error = error {
+                            print("Failed to save profile picture URL:", error.localizedDescription)
+                        } else {
+                            print("Profile setup complete.")
+                            self.navigateToDashboard()
+                        }
+                    }
+                case .failure(let error):
+                    print("Failed to upload profile picture:", error.localizedDescription)
                 }
             }
+        }
+    }
+    
+    private func navigateToDashboard() {
+        let dashboardVC = DashboardViewController()
+        let navigationController = UINavigationController(rootViewController: dashboardVC)
+        navigationController.modalPresentationStyle = .fullScreen
+        DispatchQueue.main.async {
+            self.present(navigationController, animated: true, completion: nil)
         }
     }
 
@@ -143,6 +174,24 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
+    }
+    
+    @objc private func selectProfilePicture() {
+        let imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
+        imagePicker.sourceType = .photoLibrary
+        present(imagePicker, animated: true)
+    }
+
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+        if let selectedImage = info[.originalImage] as? UIImage {
+            profileImageView.image = selectedImage
+        }
+        picker.dismiss(animated: true)
+    }
+
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true)
     }
 }
 

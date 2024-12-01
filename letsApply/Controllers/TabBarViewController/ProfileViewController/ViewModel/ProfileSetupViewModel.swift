@@ -34,6 +34,15 @@ class ProfileSetupViewModel {
             }
         }
     }
+    
+    func updateProfilePictureUrl(_ url: String, completion: @escaping (Error?) -> Void) {
+        guard var profile = userProfile else {
+            completion(NSError(domain: "UserProfileError", code: -1, userInfo: nil))
+            return
+        }
+        profile.profilePictureUrl = url
+        firestoreService.saveUserProfile(profile, completion: completion)
+    }
 
     func saveProfile(skills: [String], location: String, completion: @escaping (Error?) -> Void) {
         guard var profile = userProfile else {
@@ -44,7 +53,6 @@ class ProfileSetupViewModel {
         profile.location = location
         firestoreService.saveUserProfile(profile, completion: completion)
     }
-
     func logout(completion: @escaping (Error?) -> Void) {
         do {
             try Auth.auth().signOut()

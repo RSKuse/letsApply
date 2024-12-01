@@ -5,4 +5,10 @@ target 'letsApply' do
 
   pod 'Firebase/Auth'
   pod 'Firebase/Firestore'
+  pod 'Firebase/Storage'
+end
+
+target 'letsApplyTests' do
+  inherit! :search_paths
+  # Test-specific dependencies
 end

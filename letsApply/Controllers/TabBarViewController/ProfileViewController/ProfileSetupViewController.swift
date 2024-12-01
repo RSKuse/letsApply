@@ -7,12 +7,15 @@
 
 import Foundation
 import UIKit
+import FirebaseAuth
 
-class ProfileSetupViewController: UIViewController, UITextFieldDelegate {
+class ProfileSetupViewController: UIViewController, UITextFieldDelegate, ImagePickerDelegate {
 
     let firestoreService = FirestoreService()
     var currentUser: UserProfile?
     private let viewModel = ProfileSetupViewModel()
+    private let imagePickerService = ImagePickerService()
+    
 
     // Use ButtonFacade to create buttons
     lazy var saveButton: UIButton = {
@@ -46,16 +49,30 @@ class ProfileSetupViewController: UIViewController, UITextFieldDelegate {
         textField.configureTextField(placeholder: "Location", keyboardType: .emailAddress)
         return textField
     }()
+    
+    lazy var profileImageView: UIImageView = {
+        let imageView = UIImageView(image: UIImage(systemName: "person.circle"))
+        imageView.contentMode = .scaleAspectFit
+        imageView.layer.cornerRadius = 50
+        imageView.clipsToBounds = true
+        imageView.isUserInteractionEnabled = true
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(selectProfilePicture)))
+        return imageView
+    }()
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        imagePickerService.delegate = self
         setupUI()
         fetchUserProfileData()
         setupKeyboardDismissal()
     }
 
     func setupUI() {
+        view.addSubview(profileImageView)
         view.addSubview(skillsTextField)
         view.addSubview(locationTextField)
         view.addSubview(saveButton)
@@ -72,7 +89,7 @@ class ProfileSetupViewController: UIViewController, UITextFieldDelegate {
         locationTextField.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         locationTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
 
-        saveButton.topAnchor.constraint(equalTo: locationTextField.bottomAnchor, constant: 20).isActive = true
+        saveButton.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 20).isActive = true
         saveButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
 //        saveButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
 //        saveButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
@@ -81,7 +98,40 @@ class ProfileSetupViewController: UIViewController, UITextFieldDelegate {
         logoutButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
 //        logoutButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
 //        logoutButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        
+        profileImageView.topAnchor.constraint(equalTo: locationTextField.bottomAnchor, constant: 20).isActive = true
+        profileImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        profileImageView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        profileImageView.heightAnchor.constraint(equalToConstant: 100).isActive = true
     }
+    
+    @objc private func selectProfilePicture() {
+        imagePickerService.presentImagePicker(from: self)
+    }
+
+    func didSelectImage(_ image: UIImage) {
+        profileImageView.image = image
+        
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+
+        // Upload the new profile picture to Firebase
+        firestoreService.uploadProfileImage(uid: uid, image: image) { [weak self] result in
+            switch result {
+            case .success(let url):
+                // Update the user's profile picture URL in Firestore
+                self?.viewModel.updateProfilePictureUrl(url) { error in
+                    if let error = error {
+                        print("Failed to update profile with new image URL:", error.localizedDescription)
+                    } else {
+                        print("Profile updated successfully with new image URL.")
+                    }
+                }
+            case .failure(let error):
+                print("Failed to upload image:", error.localizedDescription)
+            }
+        }
+    }
+
 
     func setupKeyboardDismissal() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
@@ -131,6 +181,8 @@ class ProfileSetupViewController: UIViewController, UITextFieldDelegate {
             }
         }
     }
+    
+    
 
     @objc private func handleLogout() {
         viewModel.logout { error in
