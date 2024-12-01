@@ -35,17 +35,21 @@ class JobTableViewCell: UITableViewCell {
     }()
 
     private lazy var saveJobButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Save", for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
+        return ButtonFacade.shared.createButton(
+            title: "Save",
+            backgroundColor: .systemTeal,
+            target: self,
+            action: #selector(saveJob)
+        )
     }()
 
     private lazy var applyNowButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Apply Now", for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
+        return ButtonFacade.shared.createButton(
+            title: "Apply Now",
+            backgroundColor: .systemBlue,
+            target: self,
+            action: #selector(applyNow)
+        )
     }()
 
     // Configure Cell
@@ -71,7 +75,7 @@ class JobTableViewCell: UITableViewCell {
         contentView.addSubview(saveJobButton)
         contentView.addSubview(applyNowButton)
 
-        // Constraints
+        // Layout Constraints
         titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16).isActive = true
         titleLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 10).isActive = true
 
@@ -79,13 +83,25 @@ class JobTableViewCell: UITableViewCell {
         companyLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 10).isActive = true
 
         locationLabel.topAnchor.constraint(equalTo: companyLabel.bottomAnchor, constant: 5).isActive = true
-        locationLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16).isActive = true
         locationLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 10).isActive = true
-
-        saveJobButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
-        saveJobButton.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -10).isActive = true
+        locationLabel.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -16).isActive = true
 
         applyNowButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
         applyNowButton.rightAnchor.constraint(equalTo: saveJobButton.leftAnchor, constant: -10).isActive = true
+        applyNowButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        applyNowButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+
+        saveJobButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
+        saveJobButton.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -10).isActive = true
+        saveJobButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        saveJobButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+    }
+
+    @objc private func saveJob() {
+        print("Job saved!")
+    }
+
+    @objc private func applyNow() {
+        print("Applying for the job!")
     }
 }

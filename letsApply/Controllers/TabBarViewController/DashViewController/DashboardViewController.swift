@@ -11,6 +11,16 @@ import UIKit
 class DashboardViewController: UIViewController {
 
     private let viewModel = DashboardViewModel()
+    
+    lazy var logoutButton: UIButton = {
+        return ButtonFacade.shared.createButton(
+            title: "Log Out",
+            titleColor: .systemBlue,
+            backgroundColor: .clear,
+            target: self,
+            action: #selector(handleLogout)
+        )
+    }()
 
     lazy var greetingLabel: UILabel = {
         let label = UILabel()
@@ -32,13 +42,6 @@ class DashboardViewController: UIViewController {
         return imageView
     }()
 
-    lazy var logoutButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Log Out", for: .normal)
-        button.addTarget(self, action: #selector(handleLogout), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()

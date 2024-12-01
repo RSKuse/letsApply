@@ -12,7 +12,38 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     let firestoreService = FirestoreService()
     private let viewModel = SignInViewModel()
     
+    // Buttons created using ButtonFacade
+    lazy var signInButton: UIButton = {
+        return ButtonFacade.shared.createButton(
+            title: "Sign In",
+            titleColor: .systemBlue,
+            backgroundColor: .clear,
+            target: self,
+            action: #selector(handleSignIn)
+        )
+    }()
     
+    lazy var signUpButton: UIButton = {
+        return ButtonFacade.shared.createButton(
+            title: "Don't have an account? Sign Up",
+            titleColor: .systemBlue,
+            backgroundColor: .clear,
+            target: self,
+            action: #selector(navigateToSignUp)
+        )
+    }()
+    
+    lazy var forgotPasswordButton: UIButton = {
+        return ButtonFacade.shared.createButton(
+            title: "Forgot Password?",
+            titleColor: .systemBlue, // Corrected order
+            backgroundColor: .clear,
+            target: self,
+            action: #selector(handleForgotPassword)
+        )
+    }()
+    
+    // TextFields for email and password
     lazy var emailTextField: UITextField = {
         let textField = UITextField()
         textField.configureTextField(placeholder: "Email", keyboardType: .emailAddress)
@@ -23,30 +54,6 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         let textField = UITextField()
         textField.configureTextField(placeholder: "Password", isSecure: true)
         return textField
-    }()
-    
-    lazy var signInButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Sign In", for: .normal)
-        button.addTarget(self, action: #selector(handleSignIn), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-    
-    lazy var signUpButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Don't have an account? Sign Up", for: .normal)
-        button.addTarget(self, action: #selector(navigateToSignUp), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-    
-    lazy var forgotPasswordButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Forgot Password?", for: .normal)
-        button.addTarget(self, action: #selector(handleForgotPassword), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
     }()
     
     override func viewDidLoad() {
@@ -63,7 +70,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         view.addSubview(signUpButton)
         view.addSubview(forgotPasswordButton)
         
-        
+
         emailTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40).isActive = true
         emailTextField.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
         emailTextField.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
@@ -75,19 +82,28 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         passwordTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
         
         signInButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 20).isActive = true
-        signInButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        signInButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        signInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+//        signInButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+//        signInButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
         signUpButton.topAnchor.constraint(equalTo: signInButton.bottomAnchor, constant: 20).isActive = true
-        signUpButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        signUpButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        signUpButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+//        signUpButton.widthAnchor.constraint(equalToConstant: 2).isActive = true
+//        signUpButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
-        forgotPasswordButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
-        forgotPasswordButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        forgotPasswordButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
-        
+        forgotPasswordButton.topAnchor.constraint(equalTo: signUpButton.bottomAnchor, constant: 20).isActive = true
+        forgotPasswordButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        forgotPasswordButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
     }
     
+    func setupKeyboardDismissal() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
     
     @objc private func handleSignIn() {
         guard let email = emailTextField.text, !email.isEmpty,
@@ -115,7 +131,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             }
         }
     }
-
+    
     @objc private func handleForgotPassword() {
         guard let email = emailTextField.text, !email.isEmpty else {
             showAlert(title: "Invalid Input", message: "Please provide an email.")
@@ -138,39 +154,17 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             }
         }
     }
-
-    private func showAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-        present(alert, animated: true, completion: nil)
-    }
-
-    
-    func setupKeyboardDismissal() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        view.addGestureRecognizer(tapGesture)
-    }
-    
-    @objc private func dismissKeyboard() {
-        view.endEditing(true)
-    }
-    
-    private func showSignUpAlert() {
-        let alert = UIAlertController(title: "Account Not Found", message: "This email is not registered. Would you like to sign up?", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { [weak self] _ in
-            guard let self = self else { return }
-            let signUpVC = SignUpViewController()
-            self.navigationController?.pushViewController(signUpVC, animated: true)
-        }))
-        alert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
-        present(alert, animated: true, completion: nil)
-    }
     
     @objc private func navigateToSignUp() {
         let signUpVC = SignUpViewController()
         navigationController?.pushViewController(signUpVC, animated: true)
     }
     
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
 }
 
 
