@@ -74,8 +74,6 @@ class FirestoreService {
                 )
                 jobs.append(job)
             }
-
-            // Call the completion handler with the jobs array
             completion(jobs)
         }
     }

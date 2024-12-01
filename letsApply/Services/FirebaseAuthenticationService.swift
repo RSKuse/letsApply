@@ -25,7 +25,6 @@ class FirebaseAuthenticationService {
             completion(error)
         }
     }
-    
     /**
      Email Sign In
      */
@@ -44,14 +43,12 @@ class FirebaseAuthenticationService {
             FirestoreService().fetchUserProfile(uid: user.uid, completion: completion)
         }
     }
-    
     /**
      Reset Password
      */
     func resetPassword(email: String, completion: @escaping (Error?) -> Void) {
         Auth.auth().sendPasswordReset(withEmail: email, completion: completion)
     }
-    
     /**
      Log Out
      */

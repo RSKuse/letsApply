@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import FirebaseAuth
 
 class DashboardViewController: UIViewController {
 
@@ -47,6 +48,7 @@ class DashboardViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupUI()
+        fetchGreetingMessage()
     }
 
     private func setupUI() {
@@ -90,6 +92,14 @@ class DashboardViewController: UIViewController {
             }
         }
         */
+    }
+    
+    private func fetchGreetingMessage() {
+        viewModel.fetchGreeting { [weak self] message in
+            DispatchQueue.main.async {
+                self?.greetingLabel.text = message
+            }
+        }
     }
 }
     
