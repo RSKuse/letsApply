@@ -20,6 +20,16 @@ class JobDetailsViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    // Apply Button using ButtonFacade
+    lazy var applyButton: UIButton = {
+        return ButtonFacade.shared.createButton(
+            title: "Apply Now",
+            backgroundColor: .systemBlue,
+            target: self,
+            action: #selector(applyForJob)
+        )
+    }()
 
     lazy var titleLabel: UILabel = {
         let label = UILabel()
@@ -56,14 +66,6 @@ class JobDetailsViewController: UIViewController {
         return textView
     }()
 
-    lazy var applyButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Apply Now", for: .normal)
-        button.addTarget(self, action: #selector(applyForJob), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -79,6 +81,7 @@ class JobDetailsViewController: UIViewController {
         view.addSubview(descriptionTextView)
         view.addSubview(applyButton)
 
+        // Layout Constraints
         titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
         titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
 
@@ -95,6 +98,18 @@ class JobDetailsViewController: UIViewController {
 
         applyButton.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 20).isActive = true
         applyButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        applyButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        applyButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+    }
+
+    @objc private func applyForJob() {
+        let alert = UIAlertController(
+            title: "Application Sent",
+            message: "You have successfully applied for \(job.title).",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
     }
 
     private func displayJobDetails() {
@@ -102,13 +117,5 @@ class JobDetailsViewController: UIViewController {
         companyNameLabel.text = job.companyName
         locationLabel.text = "Location: \(job.location)"
         descriptionTextView.text = job.description
-    }
-
-    @objc private func applyForJob() {
-        // Placeholder action
-        print("Applying for job: \(job.title)")
-        let alert = UIAlertController(title: "Application Sent", message: "You have successfully applied for \(job.title).", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-        present(alert, animated: true, completion: nil)
     }
 }

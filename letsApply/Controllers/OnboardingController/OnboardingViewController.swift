@@ -9,9 +9,9 @@ import Foundation
 import UIKit
 
 class OnboardingViewController: UIViewController {
-    
+
     var currentSlide: Int = 1
-    
+
     lazy var onboardingCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -22,8 +22,7 @@ class OnboardingViewController: UIViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.register(OnboardingCell.self,
-                                forCellWithReuseIdentifier: OnboardingCell.identifier)
+        collectionView.register(OnboardingCell.self, forCellWithReuseIdentifier: OnboardingCell.identifier)
         return collectionView
     }()
 
@@ -38,21 +37,21 @@ class OnboardingViewController: UIViewController {
     }()
 
     lazy var signUpButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Sign Up", for: .normal)
-        button.addTarget(self, action: #selector(handleSignUp), for: .touchUpInside)
-        button.isHidden = true // Initially hidden
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
+        return ButtonFacade.shared.createButton(
+            title: "Sign Up",
+            backgroundColor: .systemGray,
+            target: self,
+            action: #selector(handleSignUp)
+        )
     }()
 
     lazy var signInButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Sign In", for: .normal)
-        button.addTarget(self, action: #selector(handleSignIn), for: .touchUpInside)
-        button.isHidden = true // Initially hidden
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
+        return ButtonFacade.shared.createButton(
+            title: "Sign In",
+            backgroundColor: .systemBlue,
+            target: self,
+            action: #selector(handleSignIn)
+        )
     }()
 
     private let slides = [
@@ -86,9 +85,13 @@ class OnboardingViewController: UIViewController {
 
         signUpButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
         signUpButton.leftAnchor.constraint(equalTo: view.centerXAnchor, constant: 10).isActive = true
+        signUpButton.widthAnchor.constraint(equalToConstant: 150).isActive = true
+        signUpButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
 
         signInButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
         signInButton.rightAnchor.constraint(equalTo: view.centerXAnchor, constant: -10).isActive = true
+        signInButton.widthAnchor.constraint(equalToConstant: 150).isActive = true
+        signInButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
 
     @objc private func handleSignUp() {
@@ -100,25 +103,25 @@ class OnboardingViewController: UIViewController {
     }
 }
 
-// MARK: ScrollView +Timer
+// MARK: ScrollView + Timer
 extension OnboardingViewController: UIScrollViewDelegate {
-    
+
     private func startAutoSlide() {
         autoSlideTimer?.invalidate() // Prevent duplicate timers
-        autoSlideTimer = Timer.scheduledTimer(timeInterval: 3.0,
-                                              target: self,
-                                              selector: #selector(autoSlideToNextPage),
-                                              userInfo: nil,
-                                              repeats: true)
+        autoSlideTimer = Timer.scheduledTimer(
+            timeInterval: 3.0,
+            target: self,
+            selector: #selector(autoSlideToNextPage),
+            userInfo: nil,
+            repeats: true
+        )
     }
 
     @objc private func autoSlideToNextPage() {
         guard slides.count > 1 else { return }
 
         // Update UI
-        onboardingCollectionView.scrollToItem(at: IndexPath(item: currentSlide, section: 0),
-                                              at: .centeredHorizontally,
-                                              animated: true)
+        onboardingCollectionView.scrollToItem(at: IndexPath(item: currentSlide, section: 0), at: .centeredHorizontally, animated: true)
         pageControl.currentPage = currentSlide
 
         // Increment Slides
@@ -129,16 +132,16 @@ extension OnboardingViewController: UIScrollViewDelegate {
         signInButton.isHidden = currentSlide != slides.count
 
         // Reset Slide Count
-        if (currentSlide == slides.count) {
+        if currentSlide == slides.count {
             currentSlide = 0
         }
     }
-    
+
     private func stopAutoSlide() {
         autoSlideTimer?.invalidate()
         autoSlideTimer = nil
     }
-    
+
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         stopAutoSlide() // Stop auto-sliding when the user interacts
     }
@@ -148,14 +151,13 @@ extension OnboardingViewController: UIScrollViewDelegate {
     }
 }
 
-
 // MARK: Collection View
 extension OnboardingViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return slides.count
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: view.frame.width, height: 700.0)
     }
@@ -168,7 +170,7 @@ extension OnboardingViewController: UICollectionViewDataSource, UICollectionView
         cell.configure(title: slide.0, description: slide.1)
         return cell
     }
-
+}
     /*
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard scrollView.frame.width > 0 else { return } // Ensure frame width is valid
@@ -181,4 +183,4 @@ extension OnboardingViewController: UICollectionViewDataSource, UICollectionView
         signInButton.isHidden = !isLastPage
     }
     */
-}
+
