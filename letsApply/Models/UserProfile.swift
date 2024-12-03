@@ -13,8 +13,9 @@ struct UserProfile {
     var email: String
     var skills: [String]
     var location: String
+    var profilePictureUrl: String? // New field for profile picture URL
     
     enum CodingKeys: String, CodingKey {
-        case uid, name, email, skills, location
+        case uid, name, email, skills, location, profilePictureUrl
     }
 }

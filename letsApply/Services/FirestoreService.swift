@@ -6,9 +6,12 @@
 //
 
 import Foundation
+import FirebaseStorage
 import FirebaseFirestore
 
 class FirestoreService {
+    
+    private let storage = Storage.storage()
     
     func saveUserProfile(_ profile: UserProfile, completion: @escaping (Error?) -> Void) {
         let data: [String: Any] = [
@@ -74,9 +77,43 @@ class FirestoreService {
                 )
                 jobs.append(job)
             }
-
-            // Call the completion handler with the jobs array
             completion(jobs)
         }
     }
+    
+    func uploadProfileImage(uid: String, image: UIImage, completion: @escaping (Result<String, Error>) -> Void) {
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+            completion(.failure(NSError(domain: "ImageConversionError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image to data."])))
+            return
+        }
+        
+        let storageRef = storage.reference().child("profile_pictures/\(uid).jpg")
+        storageRef.putData(imageData, metadata: nil) { _, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            storageRef.downloadURL { url, error in
+                if let error = error {
+                    completion(.failure(error))
+                } else if let url = url {
+                    completion(.success(url.absoluteString))
+                }
+            }
+        }
+    }
+
+    /// Fetches the profile picture URL from Firebase Storage.
+    func fetchProfileImageURL(uid: String, completion: @escaping (Result<String, Error>) -> Void) {
+        let storageRef = storage.reference().child("profile_pictures/\(uid).jpg")
+        storageRef.downloadURL { url, error in
+            if let error = error {
+                completion(.failure(error))
+            } else if let url = url {
+                completion(.success(url.absoluteString))
+            }
+        }
+    }
 }
+    
