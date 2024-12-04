@@ -23,8 +23,9 @@ class SplashViewController: UIViewController {
         let label = UILabel()
         label.text = "Let's Apply"
         label.font = UIFont.systemFont(ofSize: 18, weight: .medium)
+        label.numberOfLines = 0
         label.textAlignment = .center
-        label.textColor = .darkGray
+        label.textColor = .red
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
