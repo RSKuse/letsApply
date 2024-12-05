@@ -105,6 +105,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         view.endEditing(true)
     }
     
+    // Uncomment this method
     @objc private func handleSignIn() {
         guard let email = emailTextField.text, !email.isEmpty,
               let password = passwordTextField.text, !password.isEmpty else {
@@ -121,16 +122,17 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             guard let self = self else { return }
             DispatchQueue.main.async {
                 switch result {
-                case .success(let dashboard):
-                    print("User signed in successfully:", dashboard)
-                    let dashboardVC = DashboardViewController()
-                    self.navigationController?.pushViewController(dashboardVC, animated: true)
+                case .success(let userProfile):
+                    print("User signed in successfully:", userProfile)
+                    let homeScreenVC = HomeScreenViewController()
+                    self.navigationController?.pushViewController(homeScreenVC, animated: true)
                 case .failure(let error):
                     self.showAlert(title: "Sign In Failed", message: error.localizedDescription)
                 }
             }
         }
     }
+
     
     @objc private func handleForgotPassword() {
         guard let email = emailTextField.text, !email.isEmpty else {

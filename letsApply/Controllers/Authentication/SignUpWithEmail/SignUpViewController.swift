@@ -71,12 +71,18 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     }
 
     func setupUI() {
+        view.addSubview(profileImageView)
         view.addSubview(nameTextField)
         view.addSubview(emailTextField)
         view.addSubview(passwordTextField)
         view.addSubview(locationTextField)
         view.addSubview(signUpButton)
-        view.addSubview(profileImageView)
+
+        
+        profileImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40).isActive = true
+        profileImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        profileImageView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        profileImageView.heightAnchor.constraint(equalToConstant: 100).isActive = true
 
         nameTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40).isActive = true
         nameTextField.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
@@ -103,10 +109,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         signUpButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
         signUpButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
-        profileImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
-        profileImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        profileImageView.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        profileImageView.heightAnchor.constraint(equalToConstant: 100).isActive = true
     }
 
     func setupKeyboardDismissal() {
@@ -162,8 +164,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     }
     
     private func navigateToDashboard() {
-        let dashboardVC = DashboardViewController()
-        let navigationController = UINavigationController(rootViewController: dashboardVC)
+        let homeScreenVC = HomeScreenViewController()
+        let navigationController = UINavigationController(rootViewController: homeScreenVC)
         navigationController.modalPresentationStyle = .fullScreen
         DispatchQueue.main.async {
             self.present(navigationController, animated: true, completion: nil)
