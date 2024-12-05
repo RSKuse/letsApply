@@ -41,7 +41,7 @@ class OnboardingViewController: UIViewController {
             title: "Get Started",
             backgroundColor: .systemBlue,
             target: self,
-            action: #selector(navigateToDashboard)
+            action: #selector(handleGetStarted)
         )
     }()
 
@@ -89,10 +89,18 @@ class OnboardingViewController: UIViewController {
     }
 
 
-    @objc private func navigateToDashboard() {
+    @objc private func handleGetStarted() {
         let homeScreenVC = HomeScreenViewController()
-        navigationController?.pushViewController(homeScreenVC, animated: true)
+        setRootViewController(UINavigationController(rootViewController: homeScreenVC))
     }
+
+    private func setRootViewController(_ vc: UIViewController) {
+        if let window = UIApplication.shared.windows.first {
+            window.rootViewController = vc
+            UIView.transition(with: window, duration: 0.5, options: .transitionFlipFromRight, animations: nil)
+        }
+    }
+    
 }
 
 // MARK: ScrollView + Timer
@@ -113,19 +121,9 @@ extension OnboardingViewController: UIScrollViewDelegate {
         guard slides.count > 1 else { return }
 
         // Update UI
+        currentSlide = (currentSlide + 1) % slides.count
         onboardingCollectionView.scrollToItem(at: IndexPath(item: currentSlide, section: 0), at: .centeredHorizontally, animated: true)
         pageControl.currentPage = currentSlide
-
-        // Increment Slides
-        currentSlide += 1
-
-        // Display/hide Buttons
-        getStartedButton.isHidden = currentSlide != slides.count
-
-        // Reset Slide Count
-        if currentSlide == slides.count {
-            currentSlide = 0
-        }
     }
 
     private func stopAutoSlide() {

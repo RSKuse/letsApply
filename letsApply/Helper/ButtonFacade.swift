@@ -19,7 +19,7 @@ class ButtonFacade {
         titleColor: UIColor = .white,
         backgroundColor: UIColor = .systemBlue,
         font: UIFont = .systemFont(ofSize: 16, weight: .bold),
-        cornerRadius: CGFloat = 10,
+        cornerRadius: CGFloat = 25,
         target: Any?,
         action: Selector
     ) -> UIButton {
