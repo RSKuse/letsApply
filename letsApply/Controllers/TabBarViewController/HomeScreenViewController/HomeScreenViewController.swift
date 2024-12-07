@@ -11,8 +11,7 @@ import FirebaseAuth
 
 class HomeScreenViewController: UIViewController, UISearchBarDelegate {
     private let viewModel = HomeViewModel()
-
-    // MARK: - UI Components
+    
     lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.placeholder = "Search Jobs"
@@ -59,7 +58,6 @@ class HomeScreenViewController: UIViewController, UISearchBarDelegate {
         return button
     }()
     
-    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(named: "#FAE1F0")
@@ -67,7 +65,6 @@ class HomeScreenViewController: UIViewController, UISearchBarDelegate {
         fetchJobs()
     }
     
-    // MARK: - Setup UI
     private func setupUI() {
         view.addSubview(searchBar)
         view.addSubview(filtersStackView)
@@ -86,35 +83,32 @@ class HomeScreenViewController: UIViewController, UISearchBarDelegate {
             filtersStackView.addArrangedSubview(button)
         }
         
-        // Add Constraints
-        NSLayoutConstraint.activate([
-            // Search Bar
-            searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
-            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            searchBar.heightAnchor.constraint(equalToConstant: 50),
-            
-            // Filters Stack View
-            filtersStackView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 16),
-            filtersStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            filtersStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            filtersStackView.heightAnchor.constraint(equalToConstant: 40),
-            
-            // Collection View
-            collectionView.topAnchor.constraint(equalTo: filtersStackView.bottomAnchor, constant: 16),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: signUpButton.topAnchor, constant: -16),
-            
-            // Sign-Up Button
-            signUpButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
-            signUpButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            signUpButton.widthAnchor.constraint(equalToConstant: 200),
-            signUpButton.heightAnchor.constraint(equalToConstant: 50)
-        ])
+        
+        searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16).isActive = true
+        searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
+        searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
+        searchBar.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        
+        
+        filtersStackView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 16).isActive = true
+        filtersStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
+        filtersStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
+        filtersStackView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        
+        collectionView.topAnchor.constraint(equalTo: filtersStackView.bottomAnchor, constant: 16).isActive = true
+        collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        collectionView.bottomAnchor.constraint(equalTo: signUpButton.topAnchor, constant: -16).isActive = true
+        
+        
+        signUpButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
+        signUpButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        signUpButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        
     }
     
-    // MARK: - Fetch Jobs
+    // Fetch Jobs
     private func fetchJobs() {
         viewModel.fetchJobs { [weak self] in
             DispatchQueue.main.async {
@@ -123,14 +117,14 @@ class HomeScreenViewController: UIViewController, UISearchBarDelegate {
         }
     }
     
-    // MARK: - Actions
+    //  Actions
     @objc private func handleSignUp() {
         let signUpVC = SignUpViewController()
         navigationController?.pushViewController(signUpVC, animated: true)
     }
 }
 
-// MARK: - UICollectionView Data Source & Delegate
+// UICollectionView Data Source & Delegate
 extension HomeScreenViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return viewModel.jobs.count
