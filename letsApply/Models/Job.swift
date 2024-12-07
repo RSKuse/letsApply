@@ -15,6 +15,8 @@ struct Job: Codable {
     let jobType: String
     let requiredSkills: [String]
     let description: String
+    let deadline: String
+    let experience: String
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -24,6 +26,8 @@ struct Job: Codable {
         case jobType
         case requiredSkills
         case description
+        case deadline
+        case experience
     }
 }
 
