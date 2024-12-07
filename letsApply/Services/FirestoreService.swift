@@ -62,7 +62,7 @@ class FirestoreService {
             }
 
             var jobs: [Job] = [] // Array to store Job objects
-           
+
             // Iterate through the documents using a for-loop
             for document in documents {
                 let data = document.data() // Extract the data dictionary
@@ -70,10 +70,12 @@ class FirestoreService {
                     id: document.documentID,
                     title: data[Job.CodingKeys.title.rawValue] as? String ?? "",
                     companyName: data[Job.CodingKeys.companyName.rawValue] as? String ?? "",
-                    location:  data[Job.CodingKeys.location.rawValue] as? String ?? "",
+                    location: data[Job.CodingKeys.location.rawValue] as? String ?? "",
                     jobType: data[Job.CodingKeys.jobType.rawValue] as? String ?? "",
                     requiredSkills: data[Job.CodingKeys.requiredSkills.rawValue] as? [String] ?? [],
-                    description: data[Job.CodingKeys.description.rawValue] as? String ?? ""
+                    description: data[Job.CodingKeys.description.rawValue] as? String ?? "",
+                    deadline: data[Job.CodingKeys.deadline.rawValue] as? String ?? "N/A",
+                    experience: data[Job.CodingKeys.experience.rawValue] as? String ?? "N/A"
                 )
                 jobs.append(job)
             }

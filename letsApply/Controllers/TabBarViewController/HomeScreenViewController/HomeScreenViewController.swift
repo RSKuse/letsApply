@@ -9,92 +9,138 @@ import Foundation
 import UIKit
 import FirebaseAuth
 
-class HomeScreenViewController: UIViewController {
-
+class HomeScreenViewController: UIViewController, UISearchBarDelegate {
     private let viewModel = HomeViewModel()
-
-    // MARK: - UI Components
-
-    lazy var tableView: UITableView = {
-        let tableView = UITableView()
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.register(JobTableViewCell.self, forCellReuseIdentifier: JobTableViewCell.identifier)
-        tableView.dataSource = self
-        tableView.delegate = self
-        return tableView
+    
+    lazy var searchBar: UISearchBar = {
+        let searchBar = UISearchBar()
+        searchBar.placeholder = "Search Jobs"
+        searchBar.searchBarStyle = .minimal
+        searchBar.layer.cornerRadius = 10
+        searchBar.layer.masksToBounds = true
+        searchBar.layer.borderWidth = 1
+        searchBar.layer.borderColor = UIColor(named: "#AB016C")?.cgColor
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        return searchBar
     }()
-
+    
+    lazy var filtersStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.distribution = .fillEqually
+        stackView.spacing = 10
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
+    
+    lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.itemSize = CGSize(width: view.frame.width - 32, height: 180) // Adjusted for larger cards
+        layout.minimumLineSpacing = 16
+        layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16) // Padding around the section
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .white
+        collectionView.register(JobCollectionViewCell.self, forCellWithReuseIdentifier: JobCollectionViewCell.reuseIdentifier)
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        return collectionView
+    }()
+    
     lazy var signUpButton: UIButton = {
-        return ButtonFacade.shared.createButton(
-            title: "Sign Up",
-            backgroundColor: .systemBlue,
-            target: self,
-            action: #selector(handleSignUp)
-        )
+        let button = UIButton(type: .system)
+        button.setTitle("Sign Up", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = UIColor(named: "#AB016C")
+        button.layer.cornerRadius = 12
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(handleSignUp), for: .touchUpInside)
+        return button
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(named: "#FAE1F0")
         setupUI()
         fetchJobs()
     }
-
+    
     private func setupUI() {
-        view.addSubview(tableView)
+        view.addSubview(searchBar)
+        view.addSubview(filtersStackView)
+        view.addSubview(collectionView)
         view.addSubview(signUpButton)
-
-        // TableView Constraints
-        tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: signUpButton.topAnchor, constant: -10).isActive = true
-
-        // SignUp Button Constraints
+        
+        // Add Filter Buttons
+        let filterTitles = ["City", "Experience", "Company"]
+        for title in filterTitles {
+            let button = UIButton(type: .system)
+            button.setTitle(title, for: .normal)
+            button.setTitleColor(.white, for: .normal)
+            button.backgroundColor = UIColor(named: "#AB016C")
+            button.layer.cornerRadius = 8
+            button.layer.masksToBounds = true
+            filtersStackView.addArrangedSubview(button)
+        }
+        
+        
+        searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16).isActive = true
+        searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
+        searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
+        searchBar.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        
+        
+        filtersStackView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 16).isActive = true
+        filtersStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
+        filtersStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
+        filtersStackView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        
+        collectionView.topAnchor.constraint(equalTo: filtersStackView.bottomAnchor, constant: 16).isActive = true
+        collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        collectionView.bottomAnchor.constraint(equalTo: signUpButton.topAnchor, constant: -16).isActive = true
+        
+        
         signUpButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
         signUpButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         signUpButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        signUpButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        
     }
-
+    
+    // Fetch Jobs
     private func fetchJobs() {
         viewModel.fetchJobs { [weak self] in
-            guard let self = self else { return }
             DispatchQueue.main.async {
-                self.tableView.reloadData()
+                self?.collectionView.reloadData()
             }
         }
     }
-
+    
+    //  Actions
     @objc private func handleSignUp() {
         let signUpVC = SignUpViewController()
         navigationController?.pushViewController(signUpVC, animated: true)
     }
 }
 
-// MARK: - UITableViewDataSource and UITableViewDelegate
-extension HomeScreenViewController: UITableViewDataSource, UITableViewDelegate {
+// UICollectionView Data Source & Delegate
+extension HomeScreenViewController: UICollectionViewDataSource, UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return viewModel.jobs.count
+    }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-         return viewModel.jobs.count
-     }
-
-     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-         guard let cell = tableView.dequeueReusableCell(withIdentifier: JobTableViewCell.identifier, for: indexPath) as? JobTableViewCell else {
-             return UITableViewCell()
-         }
-         let job = viewModel.jobs[indexPath.row]
-         cell.configure(with: job)
-         return cell
-     }
-
-     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-         let job = viewModel.jobs[indexPath.row]
-         let jobDetailsVC = JobDetailsViewController(job: job)
-         navigationController?.pushViewController(jobDetailsVC, animated: true)
-     }
-
-     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-         return UITableView.automaticDimension
-     }
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: JobCollectionViewCell.reuseIdentifier, for: indexPath) as? JobCollectionViewCell else {
+            return UICollectionViewCell()
+        }
+        cell.configure(with: viewModel.jobs[indexPath.row])
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let job = viewModel.jobs[indexPath.row]
+        let detailsVC = JobDetailsViewController(job: job)
+        navigationController?.pushViewController(detailsVC, animated: true)
+    }
 }
