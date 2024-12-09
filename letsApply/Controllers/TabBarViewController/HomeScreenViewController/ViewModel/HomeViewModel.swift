@@ -9,15 +9,14 @@
 import Foundation
 
 class HomeViewModel {
-
     private let firestoreService = FirestoreService()
     var jobs: [Job] = []
 
     func fetchJobs(completion: @escaping () -> Void) {
         firestoreService.fetchJobs { [weak self] fetchedJobs in
+            print("Jobs fetched in ViewModel: \(fetchedJobs.count)")
             self?.jobs = fetchedJobs
             completion()
         }
     }
 }
-    

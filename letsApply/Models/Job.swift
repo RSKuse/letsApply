@@ -8,26 +8,57 @@
 import Foundation
 
 struct Job: Codable {
-    let id: String
+    let id: String?
     let title: String
     let companyName: String
-    let location: String
+    let location: Location
     let jobType: String
-    let requiredSkills: [String]
+    let remote: Bool
     let description: String
-    let deadline: String
-    let experience: String
-    
-    enum CodingKeys: String, CodingKey {
-        case id
-        case title
-        case companyName
-        case location
-        case jobType
-        case requiredSkills
-        case description
-        case deadline
-        case experience
-    }
+    let qualifications: [String]
+    let responsibilities: [String]
+    let requirements: [String]
+    let experience: Experience
+    let compensation: Compensation
+    let application: Application
+    let jobCategory: String
+    let postingDate: String
+    let visibility: Visibility
+    let promoted: [String]?
 }
 
+struct Location: Codable {
+    let city: String
+    let region: String
+    let country: String
+}
+
+struct Experience: Codable {
+    let minYears: Int
+    let preferredYears: Int // Changed from String to Int
+    let details: String
+}
+
+struct Compensation: Codable {
+    let salaryRange: SalaryRange
+    let benefits: [String]
+}
+
+struct SalaryRange: Codable {
+    let min: Int // Changed from String to Int
+    let max: Int // Changed from String to Int
+    let currency: String
+}
+
+struct Application: Codable {
+    let deadline: String
+    let applicationUrl: String
+    let applicationEmail: String
+    let contactPhone: String
+}
+
+struct Visibility: Codable {
+    let featured: Bool
+    let promoted: Bool
+}
+                
