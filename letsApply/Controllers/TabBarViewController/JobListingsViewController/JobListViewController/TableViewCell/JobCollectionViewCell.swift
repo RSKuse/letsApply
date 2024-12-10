@@ -13,9 +13,7 @@ class JobCollectionViewCell: UICollectionViewCell {
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        // Slightly larger and bolder for a more elegant headline
         label.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
-        // A nicer color for the title, maybe systemPurple to match filters
         label.textColor = .systemPurple
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
