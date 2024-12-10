@@ -13,7 +13,28 @@ class FirebaseAuthenticationService {
     // Singleton instance of the service
     static let shared = FirebaseAuthenticationService()
     
-    private init() {} // Make the initializer private to enforce singleton usage
+    init() {} // Make the initializer private to enforce singleton usage
+    
+    var isAuthenticatedAnonymously: Bool {
+        return Auth.auth().currentUser?.isAnonymous ?? false
+    }
+    
+    var isAuthenticatedViaEmail: Bool {
+        return Auth.auth().currentUser?.email != nil
+    }
+    
+    var isAuthenticated: Bool {
+        return isAuthenticatedAnonymously || isAuthenticatedViaEmail
+    }
+    
+    /**
+     Sign in Anonymously
+     */
+    func signUpAnonymously(completion: @escaping (Error?) -> Void) {
+        Auth.auth().signInAnonymously { authResult, error in
+            completion(error)
+        }
+    }
     
     /**
      Email Sign Up
@@ -21,9 +42,16 @@ class FirebaseAuthenticationService {
     func signUp(email: String,
                 password: String,
                 completion: @escaping (Error?) -> Void) {
+        let authenticationCredential: AuthCredential = EmailAuthProvider.credential(withEmail: email, password: password)
+        Auth.auth().currentUser?.link(with: authenticationCredential,
+                                      completion: { authResult, error in
+            completion(error)
+        })
+        /*
         Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
             completion(error)
         }
+        */
     }
     /**
      Email Sign In

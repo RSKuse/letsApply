@@ -123,7 +123,7 @@ class HomeScreenViewController: UIViewController, UISearchBarDelegate {
     
     private func fetchJobs() {
         loadingSpinner.startAnimating()
-        viewModel.fetchJobs { [weak self] in
+        viewModel.authenticateAndFetchJobs { [weak self] in
             DispatchQueue.main.async {
                 self?.loadingSpinner.stopAnimating()
                 self?.collectionView.reloadData()

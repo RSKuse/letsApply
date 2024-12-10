@@ -53,8 +53,22 @@ class FirestoreService {
         }
     }
     
-    func fetchJobs(completion: @escaping ([Job]) -> Void) {
-        Firestore.firestore().collection(FirebaseCollections.jobs.rawValue).getDocuments { snapshot, error in
+    func fetchJobs(numberOfJobsToFetch jobCount: Int? = nil,
+                   completion: @escaping ([Job]) -> Void) {
+        
+        let firestore =  Firestore.firestore()
+        var query: Query = firestore.collection(FirebaseCollections.jobs.rawValue)
+        
+        // query.limit(toLast: 10)
+        // query.filter(using: )
+        // query.whereField("title", isEqualTo: "Clerk: Branch Administration")
+        
+        if let count = jobCount {
+            query = query.limit(to: count)
+        }
+        
+        query.getDocuments { [weak self] snapshot, error in
+            guard let self  else { return }
             if let error = error {
                 print("Error fetching jobs: \(error.localizedDescription)")
                 completion([])
@@ -67,85 +81,89 @@ class FirestoreService {
                 return
             }
 
-            var jobs: [Job] = []
-
-            for document in documents {
-                let data = document.data()
-
-                // Extract location
-                let locationData = data["location"] as? [String: Any] ?? [:]
-                let location = Location(
-                    city: locationData["city"] as? String ?? "",
-                    region: locationData["region"] as? String ?? "",
-                    country: locationData["country"] as? String ?? ""
-                )
-
-                // Extract experience
-                let experienceData = data["experience"] as? [String: Any] ?? [:]
-                let experience = Experience(
-                    minYears: experienceData["minYears"] as? Int ?? 0,
-                    preferredYears: experienceData["preferredYears"] as? Int ?? 0,
-                    details: experienceData["details"] as? String ?? ""
-                )
-
-                // Extract compensation
-                let compensationData = data["compensation"] as? [String: Any] ?? [:]
-                let salaryRangeData = compensationData["salaryRange"] as? [String: Any] ?? [:]
-                let salaryRange = SalaryRange(
-                    min: salaryRangeData["min"] as? Int ?? 0,
-                    max: salaryRangeData["max"] as? Int ?? 0,
-                    currency: salaryRangeData["currency"] as? String ?? ""
-                )
-                let benefits = compensationData["benefits"] as? [String] ?? []
-                let compensation = Compensation(salaryRange: salaryRange, benefits: benefits)
-
-                // Extract application
-                let applicationData = data["application"] as? [String: Any] ?? [:]
-                let application = Application(
-                    deadline: applicationData["deadline"] as? String ?? "",
-                    applicationUrl: applicationData["applicationUrl"] as? String ?? "",
-                    applicationEmail: applicationData["applicationEmail"] as? String ?? "",
-                    contactPhone: applicationData["contactPhone"] as? String ?? ""
-                )
-
-                // Extract visibility
-                let visibilityData = data["visibility"] as? [String: Any] ?? [:]
-                let visibility = Visibility(
-                    featured: visibilityData["featured"] as? Bool ?? false,
-                    promoted: visibilityData["promoted"] as? Bool ?? false
-                )
-
-                // Now extract top-level fields
-                let qualifications = data["qualifications"] as? [String] ?? []
-                let responsibilities = data["responsibilities"] as? [String] ?? []
-                let requirements = data["requirements"] as? [String] ?? []
-                let promotedTags = data["promoted"] as? [String]
-
-                let job = Job(
-                    id: document.documentID,
-                    title: data["title"] as? String ?? "",
-                    companyName: data["companyName"] as? String ?? "",
-                    location: location,
-                    jobType: data["jobType"] as? String ?? "",
-                    remote: data["remote"] as? Bool ?? false,
-                    description: data["description"] as? String ?? "",
-                    qualifications: qualifications,
-                    responsibilities: responsibilities,
-                    requirements: requirements,
-                    experience: experience,
-                    compensation: compensation,
-                    application: application,
-                    jobCategory: data["jobCategory"] as? String ?? "",
-                    postingDate: data["postingDate"] as? String ?? "",
-                    visibility: visibility,
-                    promoted: promotedTags
-                )
-
-                jobs.append(job)
-            }
-
+            let jobs = self.extractJobs(from: documents)
             completion(jobs)
         }
+        
+    }
+    
+    private func extractJobs(from documents: [QueryDocumentSnapshot]) -> [Job] {
+        var jobs: [Job] = []
+        for document in documents {
+            let data = document.data()
+
+            // Extract location
+            let locationData = data["location"] as? [String: Any] ?? [:]
+            let location = Location(
+                city: locationData["city"] as? String ?? "",
+                region: locationData["region"] as? String ?? "",
+                country: locationData["country"] as? String ?? ""
+            )
+
+            // Extract experience
+            let experienceData = data["experience"] as? [String: Any] ?? [:]
+            let experience = Experience(
+                minYears: experienceData["minYears"] as? Int ?? 0,
+                preferredYears: experienceData["preferredYears"] as? Int ?? 0,
+                details: experienceData["details"] as? String ?? ""
+            )
+
+            // Extract compensation
+            let compensationData = data["compensation"] as? [String: Any] ?? [:]
+            let salaryRangeData = compensationData["salaryRange"] as? [String: Any] ?? [:]
+            let salaryRange = SalaryRange(
+                min: salaryRangeData["min"] as? Int ?? 0,
+                max: salaryRangeData["max"] as? Int ?? 0,
+                currency: salaryRangeData["currency"] as? String ?? ""
+            )
+            let benefits = compensationData["benefits"] as? [String] ?? []
+            let compensation = Compensation(salaryRange: salaryRange, benefits: benefits)
+
+            // Extract application
+            let applicationData = data["application"] as? [String: Any] ?? [:]
+            let application = Application(
+                deadline: applicationData["deadline"] as? String ?? "",
+                applicationUrl: applicationData["applicationUrl"] as? String ?? "",
+                applicationEmail: applicationData["applicationEmail"] as? String ?? "",
+                contactPhone: applicationData["contactPhone"] as? String ?? ""
+            )
+
+            // Extract visibility
+            let visibilityData = data["visibility"] as? [String: Any] ?? [:]
+            let visibility = Visibility(
+                featured: visibilityData["featured"] as? Bool ?? false,
+                promoted: visibilityData["promoted"] as? Bool ?? false
+            )
+
+            // Now extract top-level fields
+            let qualifications = data["qualifications"] as? [String] ?? []
+            let responsibilities = data["responsibilities"] as? [String] ?? []
+            let requirements = data["requirements"] as? [String] ?? []
+            let promotedTags = data["promoted"] as? [String]
+
+            let job = Job(
+                id: document.documentID,
+                title: data["title"] as? String ?? "",
+                companyName: data["companyName"] as? String ?? "",
+                location: location,
+                jobType: data["jobType"] as? String ?? "",
+                remote: data["remote"] as? Bool ?? false,
+                description: data["description"] as? String ?? "",
+                qualifications: qualifications,
+                responsibilities: responsibilities,
+                requirements: requirements,
+                experience: experience,
+                compensation: compensation,
+                application: application,
+                jobCategory: data["jobCategory"] as? String ?? "",
+                postingDate: data["postingDate"] as? String ?? "",
+                visibility: visibility,
+                promoted: promotedTags
+            )
+
+            jobs.append(job)
+        }
+        return jobs
     }
     
     func uploadProfileImage(uid: String, image: UIImage, completion: @escaping (Result<String, Error>) -> Void) {
