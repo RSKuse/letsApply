@@ -11,9 +11,6 @@ import UIKit
 class JobDetailsViewController: UIViewController {
     private let job: Job
     
-    // MARK: - UI Elements
-    
-    // Gradient header view
     private let headerView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -49,7 +46,7 @@ class JobDetailsViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    
+
     // Display the salary range right in the header for clarity
     private let salaryLabel: UILabel = {
         let label = UILabel()
@@ -66,7 +63,7 @@ class JobDetailsViewController: UIViewController {
         let stack = UIStackView()
         stack.axis = .horizontal
         // Use equal spacing to give them room to breathe
-        stack.distribution = .equalSpacing
+        stack.distribution = .fillEqually
         stack.alignment = .center
         stack.spacing = 16
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -103,14 +100,16 @@ class JobDetailsViewController: UIViewController {
         container.addSubview(valueLabel)
         
         // Constrain title and value within the chip
-        titleLabel.topAnchor.constraint(equalTo: container.topAnchor, constant: 8).isActive = true
-        titleLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 8).isActive = true
-        titleLabel.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -8).isActive = true
-        
-        valueLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4).isActive = true
-        valueLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 8).isActive = true
-        valueLabel.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -8).isActive = true
-        valueLabel.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -8).isActive = true
+        NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: container.topAnchor, constant: 8),
+            titleLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 8),
+            titleLabel.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -8),
+            
+            valueLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
+            valueLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 8),
+            valueLabel.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -8),
+            valueLabel.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -8)
+        ])
         
         // Allow the chip to size itself naturally
         return container
@@ -185,10 +184,10 @@ class JobDetailsViewController: UIViewController {
         headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        // Increased height slightly to accommodate all text
-        headerView.heightAnchor.constraint(equalToConstant: 220).isActive = true
+        // Make headerView height dynamic
+        headerView.bottomAnchor.constraint(equalTo: salaryLabel.bottomAnchor, constant: 16).isActive = true
         
-        jobTitleLabel.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 30).isActive = true
+        jobTitleLabel.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 20).isActive = true
         jobTitleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16).isActive = true
         jobTitleLabel.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16).isActive = true
         
@@ -207,7 +206,8 @@ class JobDetailsViewController: UIViewController {
         infoStackView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 16).isActive = true
         infoStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
         infoStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
-        infoStackView.heightAnchor.constraint(equalToConstant: 70).isActive = true
+        // Remove fixed height
+        // infoStackView.heightAnchor.constraint(equalToConstant: 70).isActive = true
         
         segments.topAnchor.constraint(equalTo: infoStackView.bottomAnchor, constant: 16).isActive = true
         segments.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
@@ -238,8 +238,13 @@ class JobDetailsViewController: UIViewController {
     }
     
     private func applyGradientToHeader() {
-        if let layers = headerView.layer.sublayers {
-            headerView.layer.sublayers = layers.filter { !$0.isKind(of: CAGradientLayer.self) }
+        // Remove existing gradient layers to prevent duplication
+        if let sublayers = headerView.layer.sublayers {
+            for layer in sublayers {
+                if layer is CAGradientLayer {
+                    layer.removeFromSuperlayer()
+                }
+            }
         }
         
         let gradientLayer = CAGradientLayer()

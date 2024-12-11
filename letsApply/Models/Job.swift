@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import CoreLocation
+import FirebaseFirestore
 
 struct Job: Codable {
     let id: String?
@@ -31,6 +33,7 @@ struct Location: Codable {
     let city: String
     let region: String
     let country: String
+    // let coordinates: CLLocation // Geopoint
 }
 
 struct Experience: Codable {
@@ -51,7 +54,7 @@ struct SalaryRange: Codable {
 }
 
 struct Application: Codable {
-    let deadline: String
+    let deadline: String // Timestamp
     let applicationUrl: String
     let applicationEmail: String
     let contactPhone: String
