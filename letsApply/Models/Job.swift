@@ -33,7 +33,7 @@ struct Location: Codable {
     let city: String
     let region: String
     let country: String
-   let coordinates: CLLocation // Geopoint
+    // let coordinates: CLLocation // Geopoint
 }
 
 struct Experience: Codable {
@@ -54,7 +54,7 @@ struct SalaryRange: Codable {
 }
 
 struct Application: Codable {
-    let deadline: Timestamp
+    let deadline: String // Timestamp
     let applicationUrl: String
     let applicationEmail: String
     let contactPhone: String

@@ -14,6 +14,7 @@ class JobCollectionViewCell: UICollectionViewCell {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+        // A nicer color for the title, maybe systemPurple to match filters
         label.textColor = .systemPurple
         label.translatesAutoresizingMaskIntoConstraints = false
         return label

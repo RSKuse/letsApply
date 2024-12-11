@@ -62,6 +62,14 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(selectProfilePicture)))
         return imageView
     }()
+    
+    private let loadingSpinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView(style: .medium)
+        spinner.color = .systemPink
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        spinner.hidesWhenStopped = true
+        return spinner
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -77,6 +85,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         view.addSubview(passwordTextField)
         view.addSubview(locationTextField)
         view.addSubview(signUpButton)
+        view.addSubview(loadingSpinner)
 
         
         profileImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40).isActive = true
@@ -109,6 +118,9 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         signUpButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
         signUpButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
+        
+        loadingSpinner.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        loadingSpinner.topAnchor.constraint(equalTo: signUpButton.bottomAnchor, constant: 20).isActive = true
     }
 
     func setupKeyboardDismissal() {
@@ -131,33 +143,40 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
               let password = passwordTextField.text, !password.isEmpty,
               let location = locationTextField.text, !location.isEmpty,
               let profileImage = profileImageView.image else {
-            showAlert(title: "Invalid Input", message: "Please fill out all fields.")
+            showAlert(title: "Missing Information", message: "Please enter both email and password.")
             return
         }
+        
+        loadingSpinner.startAnimating()
 
         viewModel.createUser(name: name, email: email, password: password, location: location) { [weak self] error in
             guard let self = self else { return }
+            self.loadingSpinner.stopAnimating()
             if let error = error {
-                print("Failed to create user:", error.localizedDescription)
+                self.showAlert(title: "Sign Up Failed", message: error.localizedDescription)
                 return
             }
             
             // Upload the profile picture to Firebase
-            guard let uid = Auth.auth().currentUser?.uid else { return }
+            guard let uid = Auth.auth().currentUser?.uid else {
+                self.showAlert(title: "Error", message: "User ID not found.")
+                return
+            }
             ProfilePictureService.shared.uploadProfilePicture(uid: uid, image: profileImage) { result in
                 switch result {
                 case .success(let url):
                     // Save the profile picture URL
                     self.viewModel.updateProfilePictureUrl(url, for: uid) { error in
                         if let error = error {
-                            print("Failed to save profile picture URL:", error.localizedDescription)
+                            self.showAlert(title: "Error", message: "Failed to save profile picture URL: \(error.localizedDescription)")
                         } else {
-                            print("Profile setup complete.")
-                            self.navigateToDashboard()
+                            self.showAlert(title: "Success", message: "Profile setup complete.", completion: {
+                                self.navigateToDashboard()
+                            })
                         }
                     }
                 case .failure(let error):
-                    print("Failed to upload profile picture:", error.localizedDescription)
+                    self.showAlert(title: "Error", message: "Failed to upload profile picture: \(error.localizedDescription)")
                 }
             }
         }
@@ -172,9 +191,11 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         }
     }
 
-    private func showAlert(title: String, message: String) {
+    private func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            completion?()
+        }))
         present(alert, animated: true, completion: nil)
     }
     
