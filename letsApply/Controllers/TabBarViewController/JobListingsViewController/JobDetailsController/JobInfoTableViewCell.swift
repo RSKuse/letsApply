@@ -12,9 +12,7 @@ class JobInfoTableViewCell: UITableViewCell {
     
     static let reuseIdentifier = "JobInfoTableViewCellID"
     
-    // MARK: - UI Elements
-    
-    private let jobTypeChip: UILabel = {
+    lazy var jobTypeChip: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
         label.textColor = .white
@@ -26,7 +24,7 @@ class JobInfoTableViewCell: UITableViewCell {
         return label
     }()
     
-    private let locationChip: UILabel = {
+    lazy var locationChip: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
         label.textColor = .white
@@ -38,7 +36,7 @@ class JobInfoTableViewCell: UITableViewCell {
         return label
     }()
     
-    private let stackView: UIStackView = {
+    lazy var stackView: UIStackView = {
         let stack = UIStackView()
         stack.axis = .horizontal
         stack.distribution = .fillEqually
@@ -48,8 +46,6 @@ class JobInfoTableViewCell: UITableViewCell {
         return stack
     }()
     
-    // MARK: - Initializer
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
@@ -58,26 +54,22 @@ class JobInfoTableViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    // MARK: - Setup Methods
     
-    private func setupUI() {
+    func setupUI() {
         contentView.addSubview(stackView)
         stackView.addArrangedSubview(jobTypeChip)
         stackView.addArrangedSubview(locationChip)
         
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
-            
-            jobTypeChip.heightAnchor.constraint(equalToConstant: 30),
-            locationChip.heightAnchor.constraint(equalToConstant: 30)
-        ])
+        
+        stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16).isActive = true
+        stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16).isActive = true
+        stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16).isActive = true
+        stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16).isActive = true
+        
+        jobTypeChip.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        locationChip.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        
     }
-    
-    // MARK: - Configuration
     
     func configure(with job: Job) {
         jobTypeChip.text = job.jobType

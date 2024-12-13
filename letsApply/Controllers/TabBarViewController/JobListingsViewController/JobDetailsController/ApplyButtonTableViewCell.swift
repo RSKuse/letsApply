@@ -12,9 +12,7 @@ class ApplyButtonTableViewCell: UITableViewCell {
     
     static let reuseIdentifier = "ApplyButtonTableViewCellID"
     
-    // MARK: - UI Elements
-    
-    let applyButton: UIButton = {
+    lazy var applyButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Apply Now", for: .normal)
         button.setTitleColor(.white, for: .normal)
@@ -25,7 +23,6 @@ class ApplyButtonTableViewCell: UITableViewCell {
         return button
     }()
     
-    // MARK: - Initializer
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -35,18 +32,15 @@ class ApplyButtonTableViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    // MARK: - Setup Methods
     
-    private func setupUI() {
+    func setupUI() {
         contentView.addSubview(applyButton)
         
-        NSLayoutConstraint.activate([
-            applyButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
-            applyButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 24),
-            applyButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -24),
-            applyButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12),
-            applyButton.heightAnchor.constraint(equalToConstant: 44)
-        ])
+        applyButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12).isActive = true
+        applyButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 24).isActive = true
+        applyButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -24).isActive = true
+        applyButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12).isActive = true
+        applyButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        
     }
 }
