@@ -73,11 +73,11 @@ class JobDetailsViewController: UIViewController {
         ])
     }
     
-    func registerCells() {
-        tableView.register(JobHeaderTableViewCell.self, forCellReuseIdentifier: JobHeaderTableViewCell.identifier)
-        tableView.register(JobInfoTableViewCell.self, forCellReuseIdentifier: JobInfoTableViewCell.identifier)
-        tableView.register(JobDetailTableViewCell.self, forCellReuseIdentifier: JobDetailTableViewCell.identifier)
-        tableView.register(ApplyButtonTableViewCell.self, forCellReuseIdentifier: ApplyButtonTableViewCell.identifier)
+    private func registerCells() {
+        tableView.register(JobHeaderTableViewCell.self, forCellReuseIdentifier: JobHeaderTableViewCell.reuseIdentifier)
+        tableView.register(JobInfoTableViewCell.self, forCellReuseIdentifier: JobInfoTableViewCell.reuseIdentifier)
+        tableView.register(JobDetailTableViewCell.self, forCellReuseIdentifier: JobDetailTableViewCell.reuseIdentifier)
+        tableView.register(ApplyButtonTableViewCell.self, forCellReuseIdentifier: ApplyButtonTableViewCell.reuseIdentifier)
     }
     
     func configureHeaderView() {
