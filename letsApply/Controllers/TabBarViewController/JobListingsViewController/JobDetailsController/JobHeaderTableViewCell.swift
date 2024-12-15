@@ -12,9 +12,7 @@ class JobHeaderTableViewCell: UITableViewCell {
     
     static let reuseIdentifier = "JobHeaderTableViewCellID"
     
-    // MARK: - UI Elements
-    
-    private let jobTitleLabel: UILabel = {
+    lazy var jobTitleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 24, weight: .bold)
         label.textColor = .white
@@ -24,7 +22,7 @@ class JobHeaderTableViewCell: UITableViewCell {
         return label
     }()
     
-    private let companyNameLabel: UILabel = {
+    lazy var companyNameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         label.textColor = UIColor(white: 1.0, alpha: 0.9)
@@ -34,7 +32,7 @@ class JobHeaderTableViewCell: UITableViewCell {
         return label
     }()
     
-    private let locationLabel: UILabel = {
+    lazy var locationLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14, weight: .regular)
         label.textColor = UIColor(white: 1.0, alpha: 0.85)
@@ -44,7 +42,7 @@ class JobHeaderTableViewCell: UITableViewCell {
         return label
     }()
     
-    private let salaryLabel: UILabel = {
+    lazy var salaryLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14, weight: .regular)
         label.textColor = UIColor(white: 1.0, alpha: 0.85)
@@ -54,7 +52,6 @@ class JobHeaderTableViewCell: UITableViewCell {
         return label
     }()
     
-    // MARK: - Initializer
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -65,36 +62,34 @@ class JobHeaderTableViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    // MARK: - Setup Methods
     
-    private func setupUI() {
+    func setupUI() {
         contentView.addSubview(jobTitleLabel)
         contentView.addSubview(companyNameLabel)
         contentView.addSubview(locationLabel)
         contentView.addSubview(salaryLabel)
         
-        NSLayoutConstraint.activate([
-            jobTitleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
-            jobTitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            jobTitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            
-            companyNameLabel.topAnchor.constraint(equalTo: jobTitleLabel.bottomAnchor, constant: 8),
-            companyNameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            companyNameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            
-            locationLabel.topAnchor.constraint(equalTo: companyNameLabel.bottomAnchor, constant: 4),
-            locationLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            locationLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            
-            salaryLabel.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: 4),
-            salaryLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            salaryLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            salaryLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
-        ])
+        
+        jobTitleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20).isActive = true
+        jobTitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16).isActive = true
+        jobTitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16).isActive = true
+        
+        companyNameLabel.topAnchor.constraint(equalTo: jobTitleLabel.bottomAnchor, constant: 8).isActive = true
+        companyNameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16).isActive = true
+        companyNameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16).isActive = true
+        
+        locationLabel.topAnchor.constraint(equalTo: companyNameLabel.bottomAnchor, constant: 4).isActive = true
+        locationLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16).isActive = true
+        locationLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16).isActive = true
+        
+        salaryLabel.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: 4).isActive = true
+        salaryLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16).isActive = true
+        salaryLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16).isActive = true
+        salaryLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16).isActive = true
+        
     }
     
-    private func applyGradient() {
+    func applyGradient() {
         // Apply gradient background
         let gradientLayer = CAGradientLayer()
         gradientLayer.colors = [
@@ -106,11 +101,7 @@ class JobHeaderTableViewCell: UITableViewCell {
         gradientLayer.frame = contentView.bounds
         contentView.layer.insertSublayer(gradientLayer, at: 0)
         
-        // Ensure the gradient resizes with the cell
-//        gradientLayer.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     }
-    
-    // MARK: - Configuration
     
     func configure(with job: Job) {
         jobTitleLabel.text = job.title

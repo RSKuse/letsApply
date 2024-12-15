@@ -16,20 +16,17 @@ class JobDetailTableViewCell: UITableViewCell {
     
     static let reuseIdentifier = "JobDetailTableViewCellID"
     
-    // MARK: - Delegate
-    
     weak var delegate: JobDetailTableViewCellDelegate?
     
-    // MARK: - UI Elements
     
-    private let segmentedControl: UISegmentedControl = {
+    lazy var segmentedControl: UISegmentedControl = {
         let control = UISegmentedControl(items: ["Description", "Skills", "About Company"])
         control.selectedSegmentIndex = 0
         control.translatesAutoresizingMaskIntoConstraints = false
         return control
     }()
     
-    private let descriptionLabel: UILabel = {
+    lazy var descriptionLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         label.textColor = .darkGray
@@ -38,7 +35,7 @@ class JobDetailTableViewCell: UITableViewCell {
         return label
     }()
     
-    private let skillsLabel: UILabel = {
+    lazy var skillsLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         label.textColor = .darkGray
@@ -47,7 +44,7 @@ class JobDetailTableViewCell: UITableViewCell {
         return label
     }()
     
-    private let aboutCompanyLabel: UILabel = {
+    lazy var aboutCompanyLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         label.textColor = .darkGray
@@ -56,7 +53,7 @@ class JobDetailTableViewCell: UITableViewCell {
         return label
     }()
     
-    private let contentStackView: UIStackView = {
+    lazy var contentStackView: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
         stack.spacing = 16
@@ -77,10 +74,9 @@ class JobDetailTableViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    // MARK: - Setup Methods
     
-    private func setupUI() {
+    
+    func setupUI() {
         contentView.addSubview(segmentedControl)
         contentView.addSubview(contentStackView)
         
@@ -88,19 +84,16 @@ class JobDetailTableViewCell: UITableViewCell {
         contentStackView.addArrangedSubview(skillsLabel)
         contentStackView.addArrangedSubview(aboutCompanyLabel)
         
-        NSLayoutConstraint.activate([
-            segmentedControl.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            segmentedControl.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            segmentedControl.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            
-            contentStackView.topAnchor.constraint(equalTo: segmentedControl.bottomAnchor, constant: 16),
-            contentStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            contentStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            contentStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
-        ])
+        segmentedControl.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16).isActive = true
+        segmentedControl.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16).isActive = true
+        segmentedControl.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16).isActive = true
+        
+        contentStackView.topAnchor.constraint(equalTo: segmentedControl.bottomAnchor, constant: 16).isActive = true
+        contentStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16).isActive = true
+        contentStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16).isActive = true
+        contentStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16).isActive = true
+        
     }
-    
-    // MARK: - Configuration
     
     func configure(with job: Job) {
         descriptionLabel.text = job.description
@@ -108,15 +101,13 @@ class JobDetailTableViewCell: UITableViewCell {
         aboutCompanyLabel.text = "Company: \(job.companyName)\nLocation: \(job.location.city), \(job.location.region), \(job.location.country)"
     }
     
-    private func updateContent(for index: Int) {
+    func updateContent(for index: Int) {
         descriptionLabel.isHidden = index != 0
         skillsLabel.isHidden = index != 1
         aboutCompanyLabel.isHidden = index != 2
     }
     
-    // MARK: - Actions
-    
-    @objc private func segmentChanged() {
+    @objc func segmentChanged() {
         updateContent(for: segmentedControl.selectedSegmentIndex)
         delegate?.didChangeSegment(to: segmentedControl.selectedSegmentIndex)
     }
