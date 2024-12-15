@@ -5,6 +5,8 @@
 	<key>keychain-access-groups</key>
 	<array>
 		<string>$(AppIdentifierPrefix)com.simphiwe.letsApply</string>
+		<string>$(AppIdentifierPrefix)com.simphiwe.letsApply 1</string>
+		<string>$(AppIdentifierPrefix)com.simphiwe.letsApply 2</string>
 	</array>
 </dict>
 </plist>

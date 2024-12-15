@@ -19,6 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         // Check for jailbroken devices
         if SecurityManager.shared.isDeviceJailbroken() {
+            print("Detected as jailbroken device.")
             fatalError("This app does not support jailbroken devices.")
         }
         

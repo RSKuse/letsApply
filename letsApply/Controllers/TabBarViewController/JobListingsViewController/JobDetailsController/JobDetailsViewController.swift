@@ -18,6 +18,7 @@ class JobDetailsViewController: UIViewController {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.allowsSelection = false
         tableView.separatorStyle = .none
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.estimatedRowHeight = UITableView.automaticDimension
