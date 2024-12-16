@@ -183,8 +183,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     }
     
     private func navigateToDashboard() {
-        let homeScreenVC = HomeScreenViewController()
-        let navigationController = UINavigationController(rootViewController: homeScreenVC)
+        let joblistingScreenVC = JobListingsViewController()
+        let navigationController = UINavigationController(rootViewController: joblistingScreenVC)
         navigationController.modalPresentationStyle = .fullScreen
         DispatchQueue.main.async {
             self.present(navigationController, animated: true, completion: nil)
