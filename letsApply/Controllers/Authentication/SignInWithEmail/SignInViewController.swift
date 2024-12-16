@@ -124,8 +124,8 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
                 switch result {
                 case .success(let userProfile):
                     print("User signed in successfully:", userProfile)
-                    let homeScreenVC = HomeScreenViewController()
-                    self.navigationController?.pushViewController(homeScreenVC, animated: true)
+                    let joblistingScreenVC = JobListingsViewController()
+                    self.navigationController?.pushViewController(joblistingScreenVC, animated: true)
                 case .failure(let error):
                     self.showAlert(title: "Sign In Failed", message: error.localizedDescription)
                 }

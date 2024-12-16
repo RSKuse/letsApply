@@ -90,7 +90,7 @@ class OnboardingViewController: UIViewController {
 
 
     @objc private func handleGetStarted() {
-        let homeScreenVC = HomeScreenViewController()
+        let homeScreenVC = JobListingsViewController()
         setRootViewController(UINavigationController(rootViewController: homeScreenVC))
     }
 

@@ -11,7 +11,7 @@ import FirebaseAuth
 enum AuthenticationState {
     case signUp
     case profileSetup
-    case homeScreen
+    case joblistingScreen
 }
 
 class SplashViewModel {
@@ -33,7 +33,7 @@ class SplashViewModel {
                         completion(.profileSetup)
                     } else {
                         // Show MainTabBarController if profile is complete
-                        completion(.homeScreen)
+                        completion(.joblistingScreen)
                     }
                 case .failure:
                     // Default to SignInViewController on error

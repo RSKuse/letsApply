@@ -1,5 +1,5 @@
 //
-//  HomeScreenViewController.swift.swift
+//  JobListingsViewController.swift.swift
 //  letsApply
 //
 //  Created by Reuben Simphiwe Kuse on 2024/11/14.
@@ -9,8 +9,8 @@ import Foundation
 import UIKit
 import FirebaseAuth
 
-class HomeScreenViewController: UIViewController, UISearchBarDelegate {
-    private let viewModel = HomeViewModel()
+class JobListingsViewController: UIViewController, UISearchBarDelegate {
+    private let viewModel = JobListingsViewModel()
     
     private var hasReachedEnd = false
     
@@ -103,7 +103,7 @@ class HomeScreenViewController: UIViewController, UISearchBarDelegate {
     }
 
     private func setupNavigationBar() {
-        title = "Jobs"
+        title = "Home"
         
         // Configure UISearchController
         searchController.searchResultsUpdater = self
@@ -192,7 +192,7 @@ class HomeScreenViewController: UIViewController, UISearchBarDelegate {
     }
 }
 
-extension HomeScreenViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension JobListingsViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return viewModel.filteredJobs.count
     }
@@ -222,7 +222,7 @@ extension HomeScreenViewController: UICollectionViewDataSource, UICollectionView
     }
 }
 
-extension HomeScreenViewController: UISearchResultsUpdating {
+extension JobListingsViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
 
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(performSearch), object: nil)
@@ -239,7 +239,7 @@ extension HomeScreenViewController: UISearchResultsUpdating {
         collectionView.reloadData()
     }
 }
-extension HomeScreenViewController: FilterViewControllerDelegate {
+extension JobListingsViewController: FilterViewControllerDelegate {
     func didApplyFilters(_ filters: JobFilters) {
         viewModel.applyFilters(filters)
         collectionView.reloadData()
