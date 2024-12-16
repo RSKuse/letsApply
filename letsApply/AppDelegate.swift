@@ -34,9 +34,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func navigateToSplashViewController() {
-        let splashViewController = SplashViewController()
-        let navigationController = UINavigationController(rootViewController: splashViewController)
-        navigationController.modalPresentationStyle = .fullScreen
-        window?.rootViewController = navigationController
+        if FirebaseAuthenticationService.shared.isAuthenticated {
+            let mainTabBarController = MainTabBarController()
+            window?.rootViewController = mainTabBarController
+        } else {
+            let splashViewController = SplashViewController()
+            let navigationController = UINavigationController(rootViewController: splashViewController)
+            navigationController.modalPresentationStyle = .fullScreen
+            window?.rootViewController = navigationController
+        }
     }
 }

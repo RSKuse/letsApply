@@ -16,20 +16,25 @@ class MainTabBarController: UITabBarController {
     }
     
     private func setupTabs() {
-        let joblistingScreenVC = UINavigationController(rootViewController: JobListingsViewController())
-        joblistingScreenVC.tabBarItem = UITabBarItem(title: "Jobs", image: UIImage(systemName: "briefcase"), tag: 0)
         
-        let profileVC = UINavigationController(rootViewController: ProfileSetupViewController())
-        profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.circle"), tag: 1)
+        
+        // Home Dashboard
+        let homeScreenVC = UINavigationController(rootViewController: HomeScreenViewController())
+        homeScreenVC.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), tag: 0)
+        
+        // Job Listings
+        let jobListingScreenVC = UINavigationController(rootViewController: JobListingsViewController())
+        jobListingScreenVC.tabBarItem = UITabBarItem(title: "Jobs", image: UIImage(systemName: "briefcase"), tag: 1)
+        
 
+        // Profile Setup
+        let profileVC = UINavigationController(rootViewController: ProfileSetupViewController())
+        profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.circle"), tag: 2)
         
-        // Add Job Listings Tab
-//        let homeScreenVC = UINavigationController(rootViewController: HomeScreenViewController())
-//        jobListingsVC.tabBarItem = UITabBarItem(title: "home", image: UIImage(systemName: "house"), tag: 2)
-        
+        // CV Builder
         let cvBuilderVC = UINavigationController(rootViewController: CVBuilderViewController())
         cvBuilderVC.tabBarItem = UITabBarItem(title: "CV", image: UIImage(systemName: "doc.text"), tag: 3)
         
-        viewControllers = [joblistingScreenVC, profileVC, cvBuilderVC]
+        viewControllers = [homeScreenVC, jobListingScreenVC, profileVC, cvBuilderVC]
     }
 }
