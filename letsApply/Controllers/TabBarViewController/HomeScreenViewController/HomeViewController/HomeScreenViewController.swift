@@ -5,16 +5,19 @@
 //  Created by Reuben Simphiwe Kuse on 2024/12/16.
 //
 
-import Foundation
 import UIKit
 import FirebaseAuth
 
 class HomeScreenViewController: UIViewController {
     
     let viewModel = HomeViewModel()
+    private var searchController: UISearchController!
+    
+    // MARK: - UI Elements
     
     lazy var profileImageView: UIImageView = {
         let imageView = UIImageView()
+        imageView.image = UIImage(systemName: "person.circle")
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = 30
         imageView.clipsToBounds = true
@@ -24,71 +27,94 @@ class HomeScreenViewController: UIViewController {
     
     lazy var greetingLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.boldSystemFont(ofSize: 20)
-        label.textColor = .darkGray
-        label.text = "Hello, User"
+        label.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
+        label.textColor = .black
+        label.text = "Hey, User 👋"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-   lazy var searchController: UISearchController = {
-        let searchController = UISearchController(searchResultsController: nil)
-        searchController.searchBar.placeholder = "Search jobs..."
-        return searchController
+    lazy var notificationButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "bell"), for: .normal)
+        button.tintColor = .systemPink
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
     }()
     
-    lazy var collectionView: UICollectionView = {
+    lazy var metricsCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.register(MetricCell.self, forCellWithReuseIdentifier: MetricCell.reuseIdentifier)
         return collectionView
     }()
-
+    
+    lazy var filterButton: UIBarButtonItem = {
+        let button = UIBarButtonItem(image: UIImage(systemName: "line.horizontal.3.decrease.circle"),
+                                    style: .plain, target: self, action: #selector(handleFilter))
+        return button
+    }()
+    
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupSearchController()
         setupViewModel()
         fetchUserProfile()
-        
-        // Listen for profile updates
-        NotificationCenter.default.addObserver(self, selector: #selector(fetchUserProfile), name: .profileUpdated, object: nil)
     }
+    
+    // MARK: - Setup
     
     private func setupUI() {
         view.backgroundColor = .white
-        navigationItem.searchController = searchController
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "bell"),
-                                                            style: .plain,
-                                                            target: self,
-                                                            action: nil)
+        navigationItem.titleView = greetingLabel
+        navigationItem.rightBarButtonItem = filterButton
         
+        // Add subviews
         view.addSubview(profileImageView)
-        view.addSubview(greetingLabel)
-        view.addSubview(collectionView)
+        view.addSubview(notificationButton)
+        view.addSubview(metricsCollectionView)
         
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        collectionView.register(JobCell.self, forCellWithReuseIdentifier: JobCell.identifier)
-        
+        // Constraints
         setupConstraints()
+        
+        // CollectionView Delegate
+        metricsCollectionView.delegate = self
+        metricsCollectionView.dataSource = self
     }
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
+            // Profile Image
             profileImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
             profileImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             profileImageView.widthAnchor.constraint(equalToConstant: 60),
             profileImageView.heightAnchor.constraint(equalToConstant: 60),
             
-            greetingLabel.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
-            greetingLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 10),
+            // Notification Button
+            notificationButton.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
+            notificationButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             
-            collectionView.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 20),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            // Metrics CollectionView
+            metricsCollectionView.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 20),
+            metricsCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            metricsCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+            metricsCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+    }
+    
+    private func setupSearchController() {
+        searchController = UISearchController(searchResultsController: nil)
+        searchController.searchBar.placeholder = "Search for jobs..."
+        searchController.searchBar.delegate = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
+        definesPresentationContext = true
     }
     
     private func setupViewModel() {
@@ -99,40 +125,86 @@ class HomeScreenViewController: UIViewController {
         }
     }
     
-    @objc private func fetchUserProfile() {
-        if let uid = FirebaseAuth.Auth.auth().currentUser?.uid {
+    private func fetchUserProfile() {
+        if let uid = Auth.auth().currentUser?.uid {
             viewModel.fetchUserProfile(uid: uid)
         }
     }
     
-    private func updateUI() {
+    func updateUI() {
         if let profile = viewModel.userProfile {
-            greetingLabel.text = "Hello, \(profile.name)"
+            greetingLabel.text = "Hey, \(profile.name) 👋"
+            
             if let profileUrl = profile.profilePictureUrl {
+                // Use ProfilePictureService to fetch the image
                 ProfilePictureService.shared.fetchProfilePicture(urlString: profileUrl) { [weak self] image in
+                    guard let image = image else {
+                        self?.profileImageView.image = UIImage(systemName: "person.circle") // Placeholder
+                        return
+                    }
                     self?.profileImageView.image = image
                 }
+            } else {
+                // Set placeholder image when no URL is available
+                profileImageView.image = UIImage(systemName: "person.circle")
             }
         }
-        collectionView.reloadData()
+        metricsCollectionView.reloadData()
+    }
+
+    // Helper method to fetch image asynchronously
+    func fetchImageFromURL(urlString: String, completion: @escaping (UIImage?) -> Void) {
+        guard let url = URL(string: urlString) else {
+            completion(nil)
+            return
+        }
+        URLSession.shared.dataTask(with: url) { data, _, _ in
+            if let data = data, let image = UIImage(data: data) {
+                DispatchQueue.main.async {
+                    completion(image)
+                }
+            } else {
+                DispatchQueue.main.async {
+                    completion(nil)
+                }
+            }
+        }.resume()
+    }
+    
+    // MARK: - Actions
+    
+    @objc private func handleFilter() {
+        print("Filter button tapped")
+        // Implement filter functionality here
     }
 }
 
+// MARK: - UISearchBarDelegate
+extension HomeScreenViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let query = searchBar.text, !query.isEmpty else { return }
+        print("Searching for \(query)")
+        viewModel.searchJobs(query: query)
+    }
+}
+
+// MARK: - UICollectionViewDelegate & DataSource
 extension HomeScreenViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return viewModel.tailoredJobs.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: JobCell.identifier, for: indexPath) as? JobCell else {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MetricCell.reuseIdentifier, for: indexPath) as? MetricCell else {
             return UICollectionViewCell()
         }
-        let job = viewModel.tailoredJobs[indexPath.item]
-        cell.configure(with: job)
+        let job = viewModel.tailoredJobs[indexPath.row]
+        cell.configure(with: job.title, value: job.companyName)
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.width - 20, height: 120)
+        let width = (view.frame.width / 2) - 20
+        return CGSize(width: width, height: 100)
     }
 }

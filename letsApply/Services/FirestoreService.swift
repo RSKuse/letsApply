@@ -14,20 +14,25 @@ class FirestoreService {
     private let storage = Storage.storage()
     
     func saveUserProfile(_ profile: UserProfile, completion: @escaping (Error?) -> Void) {
-        let data: [String: Any] = [
+        var data: [String: Any] = [
             UserProfile.CodingKeys.uid.rawValue: profile.uid,
             UserProfile.CodingKeys.name.rawValue: profile.name,
             UserProfile.CodingKeys.email.rawValue: profile.email,
             UserProfile.CodingKeys.skills.rawValue: profile.skills,
-            UserProfile.CodingKeys.location.rawValue: profile.location]
+            UserProfile.CodingKeys.location.rawValue: profile.location
+        ]
+        
+        // Include profile picture URL if available
+        if let profilePictureUrl = profile.profilePictureUrl {
+            data[UserProfile.CodingKeys.profilePictureUrl.rawValue] = profilePictureUrl
+        }
 
-        // Post // Put
         Firestore.firestore()
             .collection(FirebaseCollections.users.rawValue)
             .document(profile.uid)
             .setData(data) { error in
-            completion(error)
-        }
+                completion(error)
+            }
     }
 
     func fetchUserProfile(uid: String, completion: @escaping (Result<UserProfile, Error>) -> Void) {
