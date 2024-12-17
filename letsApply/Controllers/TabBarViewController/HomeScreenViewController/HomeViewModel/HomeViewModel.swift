@@ -4,14 +4,14 @@
 //
 //  Created by Reuben Simphiwe Kuse on 2024/12/16.
 //
-
 import Foundation
 import FirebaseFirestore
 
 class HomeViewModel {
     private let firestoreService = FirestoreService()
     var userProfile: UserProfile?
-    var tailoredJobs: [Job] = []
+    var allJobs: [Job] = []           // All fetched jobs
+    var tailoredJobs: [Job] = []      // Filtered or tailored jobs for UI
     
     var onDataUpdated: (() -> Void)?
     
@@ -29,11 +29,26 @@ class HomeViewModel {
     
     private func fetchTailoredJobs(for profile: UserProfile) {
         firestoreService.fetchJobs { [weak self] allJobs in
-            // Filter jobs based on user profile
+            self?.allJobs = allJobs
             self?.tailoredJobs = allJobs.filter { job in
                 job.qualifications.contains(where: profile.skills.contains)
             }
             self?.onDataUpdated?()
         }
+    }
+    
+    func searchJobs(query: String) {
+        guard !query.isEmpty else {
+            tailoredJobs = allJobs
+            onDataUpdated?()
+            return
+        }
+        
+        // Filter jobs based on title or company name
+        tailoredJobs = allJobs.filter { job in
+            job.title.lowercased().contains(query.lowercased()) ||
+            job.companyName.lowercased().contains(query.lowercased())
+        }
+        onDataUpdated?()
     }
 }

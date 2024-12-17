@@ -12,7 +12,7 @@ import FirebaseFirestore
 class ProfileSetupViewModel {
     
     private let firestoreService: FirestoreService
-    private(set) var userProfile: UserProfile?
+    var userProfile: UserProfile?
 
     init(firestoreService: FirestoreService = FirestoreService()) {
         self.firestoreService = firestoreService

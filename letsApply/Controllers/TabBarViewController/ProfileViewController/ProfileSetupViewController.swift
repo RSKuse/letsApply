@@ -112,15 +112,15 @@ class ProfileSetupViewController: UIViewController, UITextFieldDelegate, ImagePi
     func didSelectImage(_ image: UIImage) {
         profileImageView.image = image
         guard let uid = Auth.auth().currentUser?.uid else { return }
-        
+
+        // Upload the profile image
         firestoreService.uploadProfileImage(uid: uid, image: image) { [weak self] result in
             switch result {
             case .success(let url):
                 self?.viewModel.updateProfilePictureUrl(url) { error in
-                    if let error = error {
-                        print("Failed to update profile with new image URL:", error.localizedDescription)
-                    } else {
-                        print("Profile updated successfully with new image URL.")
+                    if error == nil {
+                        // Notify Home Screen about the updated profile picture
+                        NotificationCenter.default.post(name: .profileUpdated, object: nil)
                     }
                 }
             case .failure(let error):
