@@ -4,51 +4,64 @@
 //
 //  Created by Reuben Simphiwe Kuse on 2024/12/16.
 //
+
 import Foundation
 import FirebaseFirestore
+import FirebaseStorage
+import UIKit
+import FirebaseAuth
 
 class HomeViewModel {
+    
+    // MARK: - Properties
+    
     private let firestoreService = FirestoreService()
-    var userProfile: UserProfile?
-    var allJobs: [Job] = []           // All fetched jobs
-    var tailoredJobs: [Job] = []      // Filtered or tailored jobs for UI
+    private let storage = Storage.storage()
     
-    var onDataUpdated: (() -> Void)?
+    // Categories to display on Home Screen
+    let categories: [JobCategory] = [
+        JobCategory(title: "Applied Jobs", icon: "doc.text.fill"),
+        JobCategory(title: "Saved Jobs", icon: "bookmark.fill"),
+        JobCategory(title: "Recommended", icon: "star.fill"),
+        JobCategory(title: "Nearby Jobs", icon: "location.fill")
+    ]
     
-    func fetchUserProfile(uid: String) {
-        firestoreService.fetchUserProfile(uid: uid) { [weak self] result in
+    // MARK: - Fetch User Profile
+    
+    func fetchUserProfile(completion: @escaping (UserProfile) -> Void) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        firestoreService.fetchUserProfile(uid: uid) { result in
             switch result {
             case .success(let profile):
-                self?.userProfile = profile
-                self?.fetchTailoredJobs(for: profile)
+                completion(profile)
             case .failure(let error):
-                print("Error fetching user profile: \(error)")
+                print("Error fetching user profile: \(error.localizedDescription)")
             }
         }
     }
     
-    private func fetchTailoredJobs(for profile: UserProfile) {
-        firestoreService.fetchJobs { [weak self] allJobs in
-            self?.allJobs = allJobs
-            self?.tailoredJobs = allJobs.filter { job in
-                job.qualifications.contains(where: profile.skills.contains)
-            }
-            self?.onDataUpdated?()
-        }
-    }
+    // MARK: - Fetch Profile Image
     
-    func searchJobs(query: String) {
-        guard !query.isEmpty else {
-            tailoredJobs = allJobs
-            onDataUpdated?()
+    func loadProfileImage(urlString: String?, completion: @escaping (UIImage?) -> Void) {
+        guard let urlString = urlString else {
+            completion(UIImage(systemName: "person.crop.circle"))
             return
         }
         
-        // Filter jobs based on title or company name
-        tailoredJobs = allJobs.filter { job in
-            job.title.lowercased().contains(query.lowercased()) ||
-            job.companyName.lowercased().contains(query.lowercased())
+        ProfilePictureService.shared.fetchProfilePicture(urlString: urlString) { image in
+            if let image = image {
+                completion(image)
+            } else {
+                completion(UIImage(systemName: "person.crop.circle"))
+            }
         }
-        onDataUpdated?()
     }
+}
+
+// MARK: - JobCategory Model
+
+struct JobCategory {
+    let title: String
+    let icon: String
 }
