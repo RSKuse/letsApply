@@ -68,8 +68,19 @@ class JobListingsViewModel {
                 return
             }
 
-            // Create user profile
-            let profile = UserProfile(uid: uid, name: "", email: "", skills: [], location: "")
+            // Create user profile with default/placeholder values for all required fields
+            let profile = UserProfile(
+                uid: uid,
+                name: "Anonymous User",
+                email: "anonymous@unknown.com",
+                location: "Unknown",
+                profilePictureUrl: nil, // Default is nil
+                jobTitle: "Unknown",
+                skills: [],
+                qualifications: [],
+                experience: "None",
+                education: "None"
+            )
 
             // Save the user profile using FirestoreService
             self.firestoreService.saveUserProfile(profile) { saveError in
@@ -81,7 +92,6 @@ class JobListingsViewModel {
             }
         }
     }
-    
     func filterJobs(with query: String) {
         if let currentFilters = currentFilters {
             filteredJobs = jobs.filter { job in
