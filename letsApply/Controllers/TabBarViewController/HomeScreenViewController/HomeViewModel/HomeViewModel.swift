@@ -57,6 +57,16 @@ class HomeViewModel {
             }
         }
     }
+    // MARK: - Fetch Relevant Jobs
+    func fetchRelevantJobs(for userProfile: UserProfile, completion: @escaping ([Job]) -> Void) {
+        firestoreService.fetchJobs { allJobs in
+            let relevantJobs = allJobs.filter { job in
+                userProfile.skills.contains(where: job.qualifications.contains) ||
+                userProfile.location == job.location.city
+            }
+            completion(relevantJobs)
+        }
+    }
 }
 
 // MARK: - JobCategory Model

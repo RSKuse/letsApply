@@ -42,58 +42,7 @@ class JobListingsViewController: UIViewController, UISearchBarDelegate {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }()
-    
-    
-//    private lazy var loadingSpinner: UIActivityIndicatorView = {
-//        let spinner = UIActivityIndicatorView(style: .large)
-//        spinner.translatesAutoresizingMaskIntoConstraints = false
-//        return spinner
-//    }()
-    
-//    lazy var filtersStackView: UIStackView = {
-//        let stackView = UIStackView()
-//        stackView.axis = .horizontal
-//        stackView.distribution = .fillEqually
-//        stackView.spacing = 10
-//        stackView.translatesAutoresizingMaskIntoConstraints = false
-//        return stackView
-//    }()
-    
-//    lazy var collectionView: UICollectionView = {
-//        let layout = UICollectionViewFlowLayout()
-//
-//        layout.itemSize = CGSize(width: view.frame.width - 32, height: 220)
-//        layout.minimumLineSpacing = 16
-//        layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-//        
-//        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-//
-//        collectionView.backgroundColor = .systemGroupedBackground
-//        collectionView.register(JobCollectionViewCell.self, forCellWithReuseIdentifier: JobCollectionViewCell.reuseIdentifier)
-//        collectionView.dataSource = self
-//        collectionView.delegate = self
-//        collectionView.translatesAutoresizingMaskIntoConstraints = false
-//        return collectionView
-//    }()
-//    
-//    lazy var signUpButton: UIButton = {
-//        let button = UIButton(type: .system)
-//        button.setTitle("Sign Up", for: .normal)
-//        button.setTitleColor(.white, for: .normal)
-//        button.backgroundColor = UIColor.systemPink
-//        button.layer.cornerRadius = 12
-//        button.translatesAutoresizingMaskIntoConstraints = false
-//        button.addTarget(self, action: #selector(handleSignUp), for: .touchUpInside)
-//        button.isHidden = true
-//        return button
-//    }()
-    
-//    lazy var loadingSpinner: UIActivityIndicatorView = {
-//        let spinner = UIActivityIndicatorView(style: .large)
-//        spinner.translatesAutoresizingMaskIntoConstraints = false
-//        return spinner
-//    }()
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemGroupedBackground
@@ -136,38 +85,8 @@ class JobListingsViewController: UIViewController, UISearchBarDelegate {
         collectionView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         collectionView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-//
-//        let filterTitles = ["City", "Experience", "Company"]
-//        for title in filterTitles {
-//            let button = UIButton(type: .system)
-//            button.setTitle(title, for: .normal)
-//            button.setTitleColor(.systemPurple, for: .normal)
-//            button.backgroundColor = .systemGray5
-//            button.layer.cornerRadius = 8
-//            button.layer.masksToBounds = true
-//            button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
-//            filtersStackView.addArrangedSubview(button)
         }
         
-
-        
-//        searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16).isActive = true
-//        searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
-//        searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
-//        searchBar.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        
-//        filtersStackView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 16).isActive = true
-//        filtersStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
-//        filtersStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
-//        filtersStackView.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        
-//
-//        
-//        
-//        signUpButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
-//        signUpButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-//        signUpButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
-//    }
     
     private func fetchJobs() {
         loadingSpinner.startAnimating()

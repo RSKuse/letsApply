@@ -4,10 +4,13 @@
 //
 //  Created by Reuben Simphiwe Kuse on 2024/12/16.
 //
-
+import Foundation
 import UIKit
 
 class HomeScreenViewController: UIViewController {
+    
+    private let homeViewModel = HomeViewModel()
+    private var jobs: [Job] = []
     
     // MARK: - UI Elements
     
@@ -53,7 +56,18 @@ class HomeScreenViewController: UIViewController {
         return collectionView
     }()
     
-    private let homeViewModel = HomeViewModel()
+    private lazy var jobsCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.itemSize = CGSize(width: view.frame.width - 40, height: 120)
+        layout.minimumLineSpacing = 15
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.register(JobCell.self, forCellWithReuseIdentifier: JobCell.identifier)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        return collectionView
+    }()
+    
+
     
     // MARK: - LifeCycle
     
