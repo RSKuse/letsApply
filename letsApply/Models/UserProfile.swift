@@ -11,11 +11,15 @@ struct UserProfile {
     let uid: String
     var name: String
     var email: String
-    var skills: [String]
     var location: String
-    var profilePictureUrl: String? // New field for profile picture URL
-    
+    var profilePictureUrl: String? // Optional
+    var jobTitle: String
+    var skills: [String]
+    var qualifications: [String]
+    var experience: String
+    var education: String
+
     enum CodingKeys: String, CodingKey {
-        case uid, name, email, skills, location, profilePictureUrl
+        case uid, name, email, location, profilePictureUrl, jobTitle, skills, qualifications, experience, education
     }
 }

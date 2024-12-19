@@ -18,8 +18,18 @@ class SignUpViewModel {
         self.firestoreService = firestoreService
     }
 
-    func createUser(name: String, email: String, password: String, location: String, completion: @escaping (Error?) -> Void) {
-        // Use FirebaseAuthenticationService for user creation
+    func createUser(
+        name: String,
+        email: String,
+        password: String,
+        location: String,
+        jobTitle: String,
+        skills: String,
+        qualifications: String,
+        experience: String,
+        education: String,
+        completion: @escaping (Error?) -> Void
+    ) {
         firebaseAuthService.signUp(email: email, password: password) { [weak self] error in
             if let error = error {
                 completion(error)
@@ -31,10 +41,22 @@ class SignUpViewModel {
                 return
             }
 
-            // Create user profile
-            let profile = UserProfile(uid: uid, name: name, email: email, skills: [], location: location)
+            let skillsArray = skills.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
+            let qualificationsArray = qualifications.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
 
-            // Save the user profile using FirestoreService
+            let profile = UserProfile(
+                uid: uid,
+                name: name,
+                email: email,
+                location: location,
+                profilePictureUrl: nil,
+                jobTitle: jobTitle,
+                skills: skillsArray,
+                qualifications: qualificationsArray,
+                experience: experience,
+                education: education
+            )
+
             self?.firestoreService.saveUserProfile(profile, completion: completion)
         }
     }

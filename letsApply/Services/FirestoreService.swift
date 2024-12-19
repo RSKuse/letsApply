@@ -13,90 +13,115 @@ class FirestoreService {
     
     private let storage = Storage.storage()
     
+    /// Saves the user profile to Firestore
     func saveUserProfile(_ profile: UserProfile, completion: @escaping (Error?) -> Void) {
         var data: [String: Any] = [
-            UserProfile.CodingKeys.uid.rawValue: profile.uid,
-            UserProfile.CodingKeys.name.rawValue: profile.name,
-            UserProfile.CodingKeys.email.rawValue: profile.email,
-            UserProfile.CodingKeys.skills.rawValue: profile.skills,
-            UserProfile.CodingKeys.location.rawValue: profile.location
+            "uid": profile.uid,
+            "name": profile.name,
+            "email": profile.email,
+            "location": profile.location,
+            "jobTitle": profile.jobTitle,
+            "skills": profile.skills,
+            "qualifications": profile.qualifications,
+            "experience": profile.experience,
+            "education": profile.education
         ]
-        
-        // Include profile picture URL if available
+
         if let profilePictureUrl = profile.profilePictureUrl {
-            data[UserProfile.CodingKeys.profilePictureUrl.rawValue] = profilePictureUrl
+            data["profilePictureUrl"] = profilePictureUrl
         }
 
         Firestore.firestore()
-            .collection(FirebaseCollections.users.rawValue)
+            .collection("users")
             .document(profile.uid)
             .setData(data) { error in
                 completion(error)
             }
     }
-
+    
+    /// Fetches the user profile from Firestore
     func fetchUserProfile(uid: String, completion: @escaping (Result<UserProfile, Error>) -> Void) {
-        
         Firestore.firestore()
             .collection(FirebaseCollections.users.rawValue)
             .document(uid)
             .getDocument { snapshot, error in
-            if let error = error {
-                completion(.failure(error))
-                return
+                if let error = error {
+                    completion(.failure(error))
+                    return
+                }
+
+                guard let data = snapshot?.data() else {
+                    print("Document not found or has no data.")
+                    completion(.failure(NSError(domain: "DataParsing", code: -1, userInfo: nil)))
+                    return
+                }
+
+                print("Fetched data: \(data)") // Log data for debugging
+
+                guard let name = data["name"] as? String,
+                      let email = data["email"] as? String,
+                      let location = data["location"] as? String,
+                      let jobTitle = data["jobTitle"] as? String,
+                      let skills = data["skills"] as? [String],
+                      let qualifications = data["qualifications"] as? [String],
+                      let experience = data["experience"] as? String,
+                      let education = data["education"] as? String else {
+                    print("Error: One or more fields are missing or of incorrect type.")
+                    completion(.failure(NSError(domain: "DataParsing", code: -1, userInfo: nil)))
+                    return
+                }
+
+                let profile = UserProfile(
+                    uid: uid,
+                    name: name,
+                    email: email,
+                    location: location,
+                    profilePictureUrl: data["profilePictureUrl"] as? String,
+                    jobTitle: jobTitle,
+                    skills: skills,
+                    qualifications: qualifications,
+                    experience: experience,
+                    education: education
+                )
+                completion(.success(profile))
             }
-            guard let data = snapshot?.data(),
-                  let name = data[UserProfile.CodingKeys.name.rawValue] as? String,
-                  let email = data[UserProfile.CodingKeys.email.rawValue] as? String,
-                  let skills = data[UserProfile.CodingKeys.skills.rawValue] as? [String],
-                  let location = data[UserProfile.CodingKeys.location.rawValue] as? String else {
-                completion(.failure(NSError(domain: "DataParsing", code: -1, userInfo: nil)))
-                return
-            }
-            let profile = UserProfile(uid: uid, name: name, email: email, skills: skills, location: location)
-            completion(.success(profile))
-        }
     }
     
-    func fetchJobs(numberOfJobsToFetch jobCount: Int? = nil,
-                   completion: @escaping ([Job]) -> Void) {
-        
-        let firestore =  Firestore.firestore()
+    /// Fetches jobs from Firestore
+    func fetchJobs(numberOfJobsToFetch jobCount: Int? = nil, completion: @escaping ([Job]) -> Void) {
+        let firestore = Firestore.firestore()
         var query: Query = firestore.collection(FirebaseCollections.jobs.rawValue)
-        
-        // query.limit(toLast: 10)
-        // query.filter(using: )
-        // query.whereField("title", isEqualTo: "Clerk: Branch Administration")
         
         if let count = jobCount {
             query = query.limit(to: count)
         }
         
         query.getDocuments { [weak self] snapshot, error in
-            guard let self  else { return }
+            guard let self = self else { return }
+            
             if let error = error {
                 print("Error fetching jobs: \(error.localizedDescription)")
                 completion([])
                 return
             }
-
+            
             guard let documents = snapshot?.documents else {
                 print("No documents found in jobs collection")
                 completion([])
                 return
             }
-
+            
             let jobs = self.extractJobs(from: documents)
             completion(jobs)
         }
-        
     }
     
+    /// Extracts job data from Firestore documents
     private func extractJobs(from documents: [QueryDocumentSnapshot]) -> [Job] {
         var jobs: [Job] = []
         for document in documents {
             let data = document.data()
-
+            
             // Extract location
             let locationData = data["location"] as? [String: Any] ?? [:]
             let location = Location(
@@ -104,7 +129,7 @@ class FirestoreService {
                 region: locationData["region"] as? String ?? "",
                 country: locationData["country"] as? String ?? ""
             )
-
+            
             // Extract experience
             let experienceData = data["experience"] as? [String: Any] ?? [:]
             let experience = Experience(
@@ -112,7 +137,7 @@ class FirestoreService {
                 preferredYears: experienceData["preferredYears"] as? Int ?? 0,
                 details: experienceData["details"] as? String ?? ""
             )
-
+            
             // Extract compensation
             let compensationData = data["compensation"] as? [String: Any] ?? [:]
             let salaryRangeData = compensationData["salaryRange"] as? [String: Any] ?? [:]
@@ -123,7 +148,7 @@ class FirestoreService {
             )
             let benefits = compensationData["benefits"] as? [String] ?? []
             let compensation = Compensation(salaryRange: salaryRange, benefits: benefits)
-
+            
             // Extract application
             let applicationData = data["application"] as? [String: Any] ?? [:]
             let application = Application(
@@ -132,20 +157,20 @@ class FirestoreService {
                 applicationEmail: applicationData["applicationEmail"] as? String ?? "",
                 contactPhone: applicationData["contactPhone"] as? String ?? ""
             )
-
+            
             // Extract visibility
             let visibilityData = data["visibility"] as? [String: Any] ?? [:]
             let visibility = Visibility(
                 featured: visibilityData["featured"] as? Bool ?? false,
                 promoted: visibilityData["promoted"] as? Bool ?? false
             )
-
+            
             // Now extract top-level fields
             let qualifications = data["qualifications"] as? [String] ?? []
             let responsibilities = data["responsibilities"] as? [String] ?? []
             let requirements = data["requirements"] as? [String] ?? []
             let promotedTags = data["promoted"] as? [String]
-
+            
             let job = Job(
                 id: document.documentID,
                 title: data["title"] as? String ?? "",
@@ -165,12 +190,13 @@ class FirestoreService {
                 visibility: visibility,
                 promoted: promotedTags
             )
-
+            
             jobs.append(job)
         }
         return jobs
     }
     
+    /// Uploads profile image to Firebase Storage
     func uploadProfileImage(uid: String, image: UIImage, completion: @escaping (Result<String, Error>) -> Void) {
         guard let imageData = image.jpegData(compressionQuality: 0.8) else {
             completion(.failure(NSError(domain: "ImageConversionError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image to data."])))
@@ -193,17 +219,4 @@ class FirestoreService {
             }
         }
     }
-
-    /// Fetches the profile picture URL from Firebase Storage.
-    func fetchProfileImageURL(uid: String, completion: @escaping (Result<String, Error>) -> Void) {
-        let storageRef = storage.reference().child("profile_pictures/\(uid).jpg")
-        storageRef.downloadURL { url, error in
-            if let error = error {
-                completion(.failure(error))
-            } else if let url = url {
-                completion(.success(url.absoluteString))
-            }
-        }
-    }
 }
-    
