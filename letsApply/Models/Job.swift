@@ -27,6 +27,10 @@ struct Job: Codable {
     let postingDate: String
     let visibility: Visibility
     let promoted: [String]?
+    
+//    enum CodingKeys: String, CodingKey {
+//        case companyName = "company_name"
+//    }
 }
 
 struct Location: Codable {

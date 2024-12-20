@@ -67,18 +67,18 @@ class MetricCardCell: UICollectionViewCell {
         cardView.addSubview(valueLabel)
         
         // Constraints
-        NSLayoutConstraint.activate([
-            cardView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            cardView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            cardView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            cardView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            
-            valueLabel.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
-            valueLabel.centerYAnchor.constraint(equalTo: cardView.centerYAnchor, constant: -5),
-            
-            titleLabel.topAnchor.constraint(equalTo: valueLabel.bottomAnchor, constant: 4),
-            titleLabel.centerXAnchor.constraint(equalTo: cardView.centerXAnchor)
-        ])
+        
+        cardView.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
+        cardView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
+        cardView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
+        cardView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
+        
+        valueLabel.centerXAnchor.constraint(equalTo: cardView.centerXAnchor).isActive = true
+        valueLabel.centerYAnchor.constraint(equalTo: cardView.centerYAnchor, constant: -5).isActive = true
+        
+        titleLabel.topAnchor.constraint(equalTo: valueLabel.bottomAnchor, constant: 4).isActive = true
+        titleLabel.centerXAnchor.constraint(equalTo: cardView.centerXAnchor).isActive = true
+        
     }
     
     func configure(title: String, value: String) {
