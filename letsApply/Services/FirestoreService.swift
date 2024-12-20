@@ -16,23 +16,23 @@ class FirestoreService {
     /// Saves the user profile to Firestore
     func saveUserProfile(_ profile: UserProfile, completion: @escaping (Error?) -> Void) {
         var data: [String: Any] = [
-            "uid": profile.uid,
-            "name": profile.name,
-            "email": profile.email,
-            "location": profile.location,
-            "jobTitle": profile.jobTitle,
-            "skills": profile.skills,
-            "qualifications": profile.qualifications,
-            "experience": profile.experience,
-            "education": profile.education
+            UserProfile.CodingKeys.uid.rawValue: profile.uid,
+            UserProfile.CodingKeys.name.rawValue: profile.name,
+            UserProfile.CodingKeys.email.rawValue: profile.email,
+            UserProfile.CodingKeys.location.rawValue: profile.location,
+            UserProfile.CodingKeys.jobTitle.rawValue: profile.jobTitle,
+            UserProfile.CodingKeys.skills.rawValue: profile.skills,
+            UserProfile.CodingKeys.qualifications.rawValue: profile.qualifications,
+            UserProfile.CodingKeys.experience.rawValue: profile.experience,
+            UserProfile.CodingKeys.education.rawValue: profile.education
         ]
 
         if let profilePictureUrl = profile.profilePictureUrl {
-            data["profilePictureUrl"] = profilePictureUrl
+            data[UserProfile.CodingKeys.profilePictureUrl.rawValue] = profilePictureUrl
         }
 
         Firestore.firestore()
-            .collection("users")
+            .collection(FirebaseCollections.users.rawValue)
             .document(profile.uid)
             .setData(data) { error in
                 completion(error)
@@ -42,7 +42,7 @@ class FirestoreService {
     /// Fetches the user profile from Firestore
     func fetchUserProfile(uid: String, completion: @escaping (Result<UserProfile, Error>) -> Void) {
         Firestore.firestore()
-            .collection("users")
+            .collection(FirebaseCollections.users.rawValue)
             .document(uid)
             .getDocument { snapshot, error in
                 if let error = error {
@@ -66,6 +66,7 @@ class FirestoreService {
                       let qualifications = data["qualifications"] as? [String],
                       let experience = data["experience"] as? String,
                       let education = data["education"] as? String else {
+                    
                     completion(.failure(NSError(domain: "DataParsing", code: -1, userInfo: [NSLocalizedDescriptionKey: "Missing or incorrect fields."])))
                     return
                 }
@@ -75,7 +76,7 @@ class FirestoreService {
                     name: name,
                     email: email,
                     location: location,
-                    profilePictureUrl: data["profilePictureUrl"] as? String,
+                    profilePictureUrl: data[UserProfile.CodingKeys.profilePictureUrl.rawValue] as? String,
                     jobTitle: jobTitle,
                     skills: skills,
                     qualifications: qualifications,
@@ -100,14 +101,12 @@ class FirestoreService {
             
             if let error = error {
                 print("Error fetching jobs: \(error.localizedDescription)")
-                completion([])
-                return
+                return completion([])
             }
             
             guard let documents = snapshot?.documents else {
                 print("No documents found in jobs collection")
-                completion([])
-                return
+                return completion([])
             }
             
             let jobs = self.extractJobs(from: documents)

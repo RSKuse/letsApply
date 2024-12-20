@@ -28,7 +28,7 @@ class FirebaseAuthenticationService {
     }
     
     /**
-     Sign in Anonymously
+     Sign Up Anonymously
      */
     func signUpAnonymously(completion: @escaping (Error?) -> Void) {
         Auth.auth().signInAnonymously { authResult, error in
