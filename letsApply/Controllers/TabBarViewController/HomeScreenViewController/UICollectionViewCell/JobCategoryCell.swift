@@ -34,16 +34,16 @@ class JobCategoryCell: UICollectionViewCell {
         contentView.layer.borderWidth = 1
         contentView.layer.borderColor = UIColor.systemGray4.cgColor
         
-        NSLayoutConstraint.activate([
-            iconImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            iconImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            iconImageView.heightAnchor.constraint(equalToConstant: 30),
-            iconImageView.widthAnchor.constraint(equalToConstant: 30),
-            
-            titleLabel.topAnchor.constraint(equalTo: iconImageView.bottomAnchor, constant: 10),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5)
-        ])
+        
+        iconImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
+        iconImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10).isActive = true
+        iconImageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        iconImageView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        
+        titleLabel.topAnchor.constraint(equalTo: iconImageView.bottomAnchor, constant: 10).isActive = true
+        titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5).isActive = true
+        titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5).isActive = true
+        
     }
     
     required init?(coder: NSCoder) {

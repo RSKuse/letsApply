@@ -34,12 +34,12 @@ class JobCell: UICollectionViewCell {
         contentView.layer.cornerRadius = 10
         contentView.backgroundColor = UIColor.systemGray6
         
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
-        ])
+        
+        stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10).isActive = true
+        stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10).isActive = true
+        stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10).isActive = true
+        stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10).isActive = true
+        
     }
     
     required init?(coder: NSCoder) {

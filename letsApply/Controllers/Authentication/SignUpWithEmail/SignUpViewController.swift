@@ -139,16 +139,27 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     // MARK: - Handle Sign Up
     
     @objc private func handleSignUp() {
-        guard let name = nameTextField.text, !name.isEmpty,
-              let email = emailTextField.text, !email.isEmpty,
-              let password = passwordTextField.text, !password.isEmpty,
-              let location = locationTextField.text, !location.isEmpty,
-              let jobTitle = jobTitleTextField.text, !jobTitle.isEmpty,
-              let skills = skillsTextField.text, !skills.isEmpty,
-              let qualifications = qualificationsTextField.text, !qualifications.isEmpty,
-              let experience = experienceTextField.text, !experience.isEmpty,
-              let education = educationTextField.text, !education.isEmpty else {
+        guard let name = nameTextField.text,
+              let email = emailTextField.text,
+              let password = passwordTextField.text,
+              let location = locationTextField.text else {
             showAlert("All fields are required")
+            return
+        }
+
+        // Validate Inputs
+        if !ValidationManager.shared.validateInputs(fields: [name, email, password, location]) {
+            showAlert("All fields are required")
+            return
+        }
+
+        if !ValidationManager.shared.validateEmail(email) {
+            showAlert("Invalid email format")
+            return
+        }
+
+        if !ValidationManager.shared.validatePassword(password) {
+            showAlert("Password must contain at least 8 characters, including an uppercase letter, a number, and a special character.")
             return
         }
 
@@ -157,11 +168,11 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
             email: email,
             password: password,
             location: location,
-            jobTitle: jobTitle,
-            skills: skills,
-            qualifications: qualifications,
-            experience: experience,
-            education: education
+            jobTitle: jobTitleTextField.text ?? "",
+            skills: skillsTextField.text ?? "",
+            qualifications: qualificationsTextField.text ?? "",
+            experience: experienceTextField.text ?? "",
+            education: educationTextField.text ?? ""
         ) { [weak self] error in
             if let error = error {
                 self?.showAlert("Sign Up Failed: \(error.localizedDescription)")
@@ -170,6 +181,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
             }
         }
     }
+    
     private func showAlert(_ message: String, isSuccess: Bool = false) {
         let alert = UIAlertController(title: isSuccess ? "Success" : "Error", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))

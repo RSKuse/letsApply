@@ -8,7 +8,11 @@
 import Foundation
 import FirebaseAuth
 
+
+
 class SignUpViewModel {
+
+    
     private let firebaseAuthService: FirebaseAuthenticationService
     private let firestoreService: FirestoreService
 
@@ -30,6 +34,13 @@ class SignUpViewModel {
         education: String,
         completion: @escaping (Error?) -> Void
     ) {
+        guard !name.isEmpty, !email.isEmpty, !password.isEmpty, !location.isEmpty,
+              !jobTitle.isEmpty, !skills.isEmpty, !qualifications.isEmpty,
+              !experience.isEmpty, !education.isEmpty else {
+            completion(NSError(domain: "ValidationError", code: -1, userInfo: [NSLocalizedDescriptionKey: "All fields are required."]))
+            return
+        }
+
         firebaseAuthService.signUp(email: email, password: password) { [weak self] error in
             if let error = error {
                 completion(error)
@@ -41,18 +52,15 @@ class SignUpViewModel {
                 return
             }
 
-            let skillsArray = skills.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
-            let qualificationsArray = qualifications.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
-
             let profile = UserProfile(
                 uid: uid,
                 name: name,
                 email: email,
                 location: location,
-                profilePictureUrl: nil,
+                profilePictureUrl: nil, // Explicitly passed nil
                 jobTitle: jobTitle,
-                skills: skillsArray,
-                qualifications: qualificationsArray,
+                skills: skills.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) },
+                qualifications: qualifications.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) },
                 experience: experience,
                 education: education
             )
@@ -60,7 +68,6 @@ class SignUpViewModel {
             self?.firestoreService.saveUserProfile(profile, completion: completion)
         }
     }
-    
     func updateProfilePictureUrl(_ url: String, for uid: String, completion: @escaping (Error?) -> Void) {
         // Fetch the existing user profile
         firestoreService.fetchUserProfile(uid: uid) { [weak self] result in

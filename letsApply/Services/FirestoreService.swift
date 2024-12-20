@@ -42,22 +42,22 @@ class FirestoreService {
     /// Fetches the user profile from Firestore
     func fetchUserProfile(uid: String, completion: @escaping (Result<UserProfile, Error>) -> Void) {
         Firestore.firestore()
-            .collection(FirebaseCollections.users.rawValue)
+            .collection("users")
             .document(uid)
             .getDocument { snapshot, error in
                 if let error = error {
                     completion(.failure(error))
                     return
                 }
-
                 guard let data = snapshot?.data() else {
-                    print("Document not found or has no data.")
-                    completion(.failure(NSError(domain: "DataParsing", code: -1, userInfo: nil)))
+                    completion(.failure(NSError(domain: "DataParsing", code: -1, userInfo: [NSLocalizedDescriptionKey: "Document not found or has no data."])))
                     return
                 }
 
-                print("Fetched data: \(data)") // Log data for debugging
+                // Log the fetched data
+                print("Fetched data: \(data)")
 
+                // Validate and map data
                 guard let name = data["name"] as? String,
                       let email = data["email"] as? String,
                       let location = data["location"] as? String,
@@ -66,8 +66,7 @@ class FirestoreService {
                       let qualifications = data["qualifications"] as? [String],
                       let experience = data["experience"] as? String,
                       let education = data["education"] as? String else {
-                    print("Error: One or more fields are missing or of incorrect type.")
-                    completion(.failure(NSError(domain: "DataParsing", code: -1, userInfo: nil)))
+                    completion(.failure(NSError(domain: "DataParsing", code: -1, userInfo: [NSLocalizedDescriptionKey: "Missing or incorrect fields."])))
                     return
                 }
 
