@@ -8,6 +8,8 @@
 import Foundation
 import FirebaseAuth
 
+
+
 class SignUpViewModel {
 
     
@@ -20,17 +22,18 @@ class SignUpViewModel {
         self.firestoreService = firestoreService
     }
 
-    func createUser(name: String,
-                    email: String,
-                    password: String,
-                    location: String,
-                    jobTitle: String,
-                    skills: String,
-                    qualifications: String,
-                    experience: String,
-                    education: String,
-                    completion: @escaping (Error?) -> Void) {
-            
+    func createUser(
+        name: String,
+        email: String,
+        password: String,
+        location: String,
+        jobTitle: String,
+        skills: String,
+        qualifications: String,
+        experience: String,
+        education: String,
+        completion: @escaping (Error?) -> Void
+    ) {
         guard !name.isEmpty, !email.isEmpty, !password.isEmpty, !location.isEmpty,
               !jobTitle.isEmpty, !skills.isEmpty, !qualifications.isEmpty,
               !experience.isEmpty, !education.isEmpty else {
@@ -39,33 +42,33 @@ class SignUpViewModel {
         }
 
         firebaseAuthService.signUp(email: email, password: password) { [weak self] error in
-            guard let self else { return }
-            
             if let error = error {
-                return completion(error)
+                completion(error)
+                return
             }
 
             guard let uid = Auth.auth().currentUser?.uid else {
-                return completion(NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "User ID not found after sign-up."]))
+                completion(NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "User ID not found after sign-up."]))
+                return
             }
-            
-            let profile = UserProfile(uid: uid,
-                                      name: name,
-                                      email: email,
-                                      location: location,
-                                      profilePictureUrl: nil,
-                                      jobTitle: jobTitle,
-                                      skills: [skills],
-                                      qualifications: [qualifications],
-                                      experience: experience,
-                                      education: education)
 
-            self.firestoreService.saveUserProfile(profile, completion: completion)
+            let profile = UserProfile(
+                uid: uid,
+                name: name,
+                email: email,
+                location: location,
+                profilePictureUrl: nil, // Explicitly passed nil
+                jobTitle: jobTitle,
+                skills: skills.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) },
+                qualifications: qualifications.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) },
+                experience: experience,
+                education: education
+            )
+
+            self?.firestoreService.saveUserProfile(profile, completion: completion)
         }
     }
-    
-    func updateProfilePictureUrl(_ url: String,
-                                 for uid: String, completion: @escaping (Error?) -> Void) {
+    func updateProfilePictureUrl(_ url: String, for uid: String, completion: @escaping (Error?) -> Void) {
         // Fetch the existing user profile
         firestoreService.fetchUserProfile(uid: uid) { [weak self] result in
             switch result {
@@ -75,6 +78,7 @@ class SignUpViewModel {
                 
                 // Save the updated profile
                 self?.firestoreService.saveUserProfile(profile, completion: completion)
+                
             case .failure(let error):
                 completion(error)
             }
