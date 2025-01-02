@@ -71,17 +71,15 @@ class SplashViewController: UIViewController {
     private func navigateToNextScreen() {
         viewModel.checkAuthentication { [weak self] authenticationState in
             DispatchQueue.main.async {
-    
-                self?.setRootViewController(MainTabBarController())
-//                guard let self else { return }
-//                switch authenticationState {
-//                case .signUp:
-//                    self.setRootViewController(UINavigationController(rootViewController: OnboardingViewController()))
-//                case .profileSetup:
-//                    self.setRootViewController(UINavigationController(rootViewController: ProfileSetupViewController()))
-//                case .homeScreen:
-//                    self.setRootViewController(MainTabBarController())
-//                }
+                guard let self = self else { return }
+                switch authenticationState {
+                case .signUp:
+                    self.setRootViewController(UINavigationController(rootViewController: OnboardingViewController()))
+                case .profileSetup:
+                    self.setRootViewController(UINavigationController(rootViewController: ProfileSetupViewController()))
+                case .joblistingScreen:
+                    self.setRootViewController(MainTabBarController())
+                }
             }
         }
     }

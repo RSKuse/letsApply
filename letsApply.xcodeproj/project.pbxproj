@@ -35,6 +35,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		458396632D15869F00E5B78E /* Exceptions for "letsApplyTests" folder in "letsApply" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				FirestoreServiceTests.swift,
+			);
+			target = F3C85AED2CDFD08F0069F1CC /* letsApply */;
+		};
 		F3C85D8E2CE132320069F1CC /* Exceptions for "letsApply" folder in "letsApply" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -48,6 +55,9 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		F3C0B7152CFCE61F007F1573 /* letsApplyTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				458396632D15869F00E5B78E /* Exceptions for "letsApplyTests" folder in "letsApply" target */,
+			);
 			path = letsApplyTests;
 			sourceTree = "<group>";
 		};
@@ -245,7 +255,7 @@
 				CODE_SIGN_ENTITLEMENTS = letsApply/letsApply.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = T8C3BDQ5BW;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = letsApply/Info.plist;
@@ -275,7 +285,7 @@
 				CODE_SIGN_ENTITLEMENTS = letsApply/letsApply.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = T8C3BDQ5BW;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = letsApply/Info.plist;

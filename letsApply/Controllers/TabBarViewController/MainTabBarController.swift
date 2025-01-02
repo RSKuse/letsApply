@@ -37,4 +37,13 @@ class MainTabBarController: UITabBarController {
         
         viewControllers = [homeScreenVC, jobListingScreenVC, profileVC, cvBuilderVC]
     }
+    private func configureTabBarAppearance() {
+        tabBar.tintColor = .systemBlue
+        tabBar.unselectedItemTintColor = .systemGray
+        tabBar.backgroundColor = .white
+        tabBar.layer.shadowColor = UIColor.black.cgColor
+        tabBar.layer.shadowOpacity = 0.1
+        tabBar.layer.shadowOffset = CGSize(width: 0, height: -2)
+        tabBar.layer.shadowRadius = 5
+    }
 }
